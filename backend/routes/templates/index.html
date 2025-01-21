@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Student Scores</title>
+    <style>
+      table {
+        width: 50%;
+        border-collapse: collapse;
+        margin: 25px 0;
+      }
+      th,
+      td {
+        padding: 12px;
+        border: 1px solid #ddd;
+        text-align: left;
+      }
+      th {
+        background-color: #f4f4f4;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Student Scores</h1>
+    {% if students %}
+    <table>
+      <tr>
+        <th>UID</th>
+        <th>Name</th>
+        <th>Score</th>
+      </tr>
+      {% for student in students %}
+      <tr>
+        <td>{{ student.uid }}</td>
+        <td>{{ student.name }}</td>
+        <td>{{ student.score }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+    <p>No data available.</p>
+    {% endif %}
+  </body>
+</html>
