@@ -2,6 +2,9 @@ from flask import Flask, render_template
 import mysql.connector
 from mysql.connector import Error
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -33,4 +36,4 @@ def index():
         return "Failed to connect to the database."
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5001)
