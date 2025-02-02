@@ -37,3 +37,10 @@ Step 5: Run the app
 ```
 python app.py
 ```
+
+Step 6: Run the frontend
+navigate to the frontend folder and run the following command:
+
+```
+npm start
+```
