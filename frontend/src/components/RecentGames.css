@@ -1,0 +1,82 @@
+.recent-games {
+  display: flex;
+}
+
+.sidebar {
+  width: 200px;
+  border-right: 1px solid #ddd;
+  margin-right: 20px;
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  cursor: pointer;
+  position: relative;
+  transition: background-color 0.3s;
+}
+
+.sidebar-item:hover {
+  background-color: #f2f2f2;
+}
+
+.sidebar-item.active {
+  background-color: #f0f0f0;
+  font-weight: bold;
+}
+
+.indicator {
+  position: absolute;
+  left: 0;
+  width: 5px;
+  height: 100%;
+  background-color: rgb(89, 0, 244);
+}
+
+.matches-section {
+  flex: 1;
+}
+
+.day-group {
+  margin-bottom: 30px;
+}
+
+.day-group h3 {
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 5px;
+  margin-bottom: 15px;
+}
+
+.match-card {
+  padding: 20px;
+  border-radius: 4px;
+}
+
+.day-group .match-card:nth-child(odd) {
+  background-color: #ffffff;
+}
+
+.day-group .match-card:nth-child(even) {
+  background-color: #f0f0f0;
+}
+
+.match-info {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-size: 0.95em;
+  color: #333;
+}
+
+.match-cup {
+  margin-right: 40px;
+}
+
+.match-team1 {
+  margin-right: 40px;
+}
+
+.match-score {
+  margin-right: 40px;
+}

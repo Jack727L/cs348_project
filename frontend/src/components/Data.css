@@ -1,0 +1,80 @@
+.data {
+  display: flex;
+}
+
+.sidebar {
+  width: 200px;
+  border-right: 1px solid #ddd;
+  margin-right: 20px;
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  cursor: pointer;
+  position: relative;
+  transition: background-color 0.3s;
+}
+
+.sidebar-item:hover {
+  background-color: #f2f2f2;
+}
+
+.sidebar-item.active {
+  background-color: #f0f0f0;
+  font-weight: bold;
+}
+
+.indicator {
+  position: absolute;
+  left: 0;
+  width: 5px;
+  height: 100%;
+  background-color: rgb(89, 0, 244);
+}
+
+.data-section {
+  flex: 1;
+  padding: 20px;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-header,
+.team-row {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+}
+
+.data-header {
+  font-weight: bold;
+  border-bottom: 2px solid #ddd;
+}
+
+.team-row {
+  border-bottom: 1px solid #eee;
+}
+
+.team-row span {
+  flex: 1;
+}
+
+.team-standing {
+  flex: 0 0 30px;
+}
+
+.team-name {
+  flex: 2;
+}
+
+.team-wins,
+.team-losses,
+.team-points {
+  flex: 1;
+  text-align: center;
+}

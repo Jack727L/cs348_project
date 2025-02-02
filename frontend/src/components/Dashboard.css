@@ -1,0 +1,55 @@
+.dashboard {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .logo {
+    flex-shrink: 0;
+    margin-right: 40px;
+  }
+  
+  .logo-text {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #007bff;
+  }
+  
+  .top-tabs {
+    display: flex;
+    border-bottom: 2px solid #ddd;
+    flex-grow: 1;
+  }
+  
+  .top-tab {
+    padding: 10px 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    outline: none;
+    font-size: 1.1em;
+    color: #555;
+    border-bottom: 2px solid transparent;
+    transition: border-bottom 0.3s, color 0.3s;
+  }
+  
+  .top-tab:hover {
+    color: #007bff;
+  }
+  
+  .top-tab.active {
+    color: #007bff;
+    border-bottom: 2px solid #007bff;
+    font-weight: bold;
+  }
+  
+  .content-area {
+    margin-top: 20px;
+  }
+  
