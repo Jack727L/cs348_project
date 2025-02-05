@@ -1,11 +1,13 @@
 .recent-games {
   display: flex;
+  height: 100%;
 }
 
 .sidebar {
   width: 200px;
   border-right: 1px solid #ddd;
   margin-right: 20px;
+  background-color: #fff;
 }
 
 .sidebar-item {
@@ -34,8 +36,17 @@
   background-color: rgb(89, 0, 244);
 }
 
-.matches-section {
+.content-wrapper {
   flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.matches-section {
+  width: 100%;
 }
 
 .day-group {
@@ -79,4 +90,19 @@
 
 .match-score {
   margin-right: 40px;
+}
+
+.clickable {
+  cursor: pointer;
+  color: #2196F3;
+}
+
+.clickable:hover {
+  text-decoration: underline;
+}
+
+.team-details {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
 }

@@ -1,0 +1,128 @@
+.sign-in-container {
+  position: relative;
+}
+
+.sign-in-wrapper {
+  position: relative;
+}
+
+.sign-in-button {
+  padding: 8px 16px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.sign-in-button:hover {
+  background-color: #45a049;
+}
+
+.sign-in-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 16px;
+  min-width: 200px;
+  max-width: 220px;
+  z-index: 1000;
+}
+
+.form-group {
+  margin-bottom: 12px;
+  width: 100%;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 4px;
+  color: #333;
+  font-size: 14px;
+}
+
+.form-group input {
+  width: calc(100% - 12px);
+  padding: 6px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.1);
+}
+
+.submit-button {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+.submit-button:hover {
+  background-color: #45a049;
+}
+
+.user-profile {
+  position: relative;
+}
+
+.user-avatar {
+  font-size: 24px;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  min-width: 150px;
+  z-index: 1000;
+}
+
+.dropdown-item {
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background-color: #f5f5f5;
+}
+
+.user-info {
+  padding: 8px 16px;
+  border-bottom: 1px solid #eee;
+  color: #666;
+  font-size: 0.9em;
+  cursor: default;
+}
+
+.user-info:hover {
+  background-color: transparent;
+}
+
+.user-info strong {
+  color: #333;
+  display: block;
+  font-size: 1.1em;
+} 
