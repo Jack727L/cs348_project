@@ -1,12 +1,5 @@
 import api from './api';
 
-/**
- * Fetches recent games from the API based on the specified league.
- *
- * @param {string} league - The league to filter the recent games by. Use 'all' to fetch all leagues.
- * @returns {Promise<Array>} - A promise that resolves to an array of recent games.
- * @throws {Object} - Throws error response data if the API call fails.
- */
 export const fetchRecentGames = async (league = 'all') => {
   try {
     const response = await api.get('/recentgames', { params: { league } });
