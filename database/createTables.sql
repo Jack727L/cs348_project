@@ -52,18 +52,20 @@ CREATE TABLE PLAYER (
 
 CREATE TABLE GAME (
     id INT PRIMARY KEY,
+    league_id INT NOT NULL,
     home_team_id INT NOT NULL,
     away_team_id INT NOT NULL,
     home_team_score INT DEFAULT 0,
     away_team_score INT DEFAULT 0,
     date DATE NOT NULL,
+    FOREIGN KEY (league_id) REFERENCES LEAGUE(id),
     FOREIGN KEY (home_team_id) REFERENCES TEAM(id),
     FOREIGN KEY (away_team_id) REFERENCES TEAM(id)
 );
 
 
 CREATE TABLE APP_USER (
-    id INT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     role ENUM('admin', 'user') DEFAULT 'user' NOT NULL
