@@ -8,7 +8,6 @@ import './RecentGames.css';
 const RecentGames = () => {
   const [activeCategory, setActiveCategory] = useState('all');
   const [selectedTeam, setSelectedTeam] = useState(null);
-  // const navigate = useNavigate();
   const [groupedMatches, setGroupedMatches] = useState({});
   const [loadingGames, setLoadingGames] = useState(false);
   const [errorGames, setErrorGames] = useState(null);
@@ -26,7 +25,7 @@ const RecentGames = () => {
       try {
         const leagues = await fetchLeagues();
         const leagueCategories = leagues.map(league => ({
-          id: league.name, // Assuming each league object has a 'name' property
+          id: league.name,
           label: league.name,
         }));
         setCategories([{ id: 'all', label: 'All Games' }, ...leagueCategories]);
