@@ -26,12 +26,22 @@ DB_PASSWORD='your_password'
 ```
 
 Step 4: Populate sample data to tables
+
 ```
 python populateTables.py
 ```
+
 You should see messages saying that "Data imported successfully."
 
 Step 5: Double-check that sample data has been loaded
+
 ```
 SELECT * FROM APP_USERS;
+```
+
+OR: to populate the tables, run the following commands:
+
+```
+mysql -u root -p < database/createTables.sql
+python database/populateTables.py
 ```

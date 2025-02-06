@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, jsonify
+from flask_cors import CORS
 import mysql.connector
 from mysql.connector import Error
 import os
@@ -7,6 +8,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
+CORS(app)
 
 def get_db_connection():
     try:
@@ -130,6 +132,16 @@ def recentGames():
     cursor.close()
     db.close()
     return jsonify(games)
+
+@app.route('/leagues', methods=['GET'])
+def get_all_leagues():
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM LEAGUE;")
+    leagues = cursor.fetchall()
+    cursor.close()
+    db.close()
+    return jsonify(leagues)
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
