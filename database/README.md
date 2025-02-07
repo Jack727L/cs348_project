@@ -30,7 +30,7 @@ Step 4: Populate sample data to tables
 ```
 We have created an auto-populate script for you to populate the database, run following command to populate the database:
 mysql -u root -p < database/createTables.sql
-python database/new_data_sets/newPopulateTables.py
+python database/new_data_sets/populateTables.py
 ```
 
 You should see messages saying that "Data imported successfully."

@@ -23,10 +23,10 @@ app.add_middleware(
 def get_db_connection():
     try:
         connection = mysql.connector.connect(
-            host=os.getenv('DB_HOST', 'localhost'),
-            database=os.getenv('DB_NAME'),
-            user=os.getenv('DB_USER'),
-            password=os.getenv('DB_PASSWORD')
+            host='localhost',
+            database='soccer_app',
+            user='admin',
+            password='securepassword'
         )
         if connection.is_connected():
             return connection
@@ -73,7 +73,7 @@ async def login(username: str = Form(...), password: str = Form(...)):
     db.close()
 
     if account:
-        return {"message": "Login successful!", "id": account['id']}
+        return {"message": "Login successful!", "id": account['user_id']}
     else:
         raise HTTPException(status_code=400, detail="Incorrect username or password.")
 
