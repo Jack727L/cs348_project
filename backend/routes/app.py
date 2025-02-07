@@ -23,10 +23,10 @@ app.add_middleware(
 def get_db_connection():
     try:
         connection = mysql.connector.connect(
-            host='localhost',
-            database='soccer_app',
-            user='admin',
-            password='securepassword'
+            host=os.getenv('DB_HOST', 'localhost'),
+            database=os.getenv('DB_NAME'),
+            user=os.getenv('DB_USER'),
+            password=os.getenv('DB_PASSWORD')
         )
         if connection.is_connected():
             return connection
