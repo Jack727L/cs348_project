@@ -1,9 +1,13 @@
----- Return recent games by league or all leagues
-SELECT GAME.league_id, LEAGUE.name as league_name, 
-       GAME.home_team_id as home_team_id, GAME.away_team_id as away_team_id,
-       home.name as home_team, away.name as away_team, 
-       game.home_team_score, game.away_team_score, game.date FROM GAME 
-       LEFT JOIN LEAGUE ON GAME.league_id = LEAGUE.id 
-       LEFT JOIN TEAM as home on GAME.home_team_id = home.id 
-       LEFT JOIN TEAM as away on GAME.away_team_id = away.id 
-WHERE LEAGUE.id = 1 --- optional
+USE soccer_app;
+
+-- Return recent games by league or all leagues
+SELECT Matches.match_id, Matches.date, Matches.match_location,
+       Matches.league_id, Leagues.leaguename, 
+       Matches.hometeam_id, Matches.awayteam_id,
+       home.teamname as home_team, away.teamname as away_team, 
+       Matches.hometeam_score, Matches.awayteam_score
+FROM Matches 
+LEFT JOIN Leagues ON Matches.league_id = Leagues.league_id
+LEFT JOIN Teams as home on Matches.hometeam_id = home.team_id
+LEFT JOIN Teams as away on Matches.awayteam_id = away.team_id
+WHERE Leagues.league_id = 1; -- optional

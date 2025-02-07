@@ -45,16 +45,17 @@ async def home():
 
 ##### Sign Up endpoint
 @app.post("/signup")
-async def signup(username: str = Form(...), password: str = Form(...)):
+async def signup(username: str = Form(...), password: str = Form(...), email: str = Form(...)):
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM app_user WHERE username = %s", (username,))
+    cursor.execute("SELECT * FROM Users WHERE username = %s", (username,))
     user_exist = cursor.fetchone() is not None
 
     if user_exist:
         raise HTTPException(status_code=401, detail="Username already exists.")
 
-    cursor.execute("INSERT INTO app_user(username, password, role) VALUES (%s, %s, 'user');", (username, password))
+    cursor.execute("INSERT INTO Users(username, password, email, role_id)  \
+                   VALUES (%s, %s, %s, 2);", (username, password, email))
     db.commit()
 
     cursor.close()
@@ -66,7 +67,7 @@ async def signup(username: str = Form(...), password: str = Form(...)):
 async def login(username: str = Form(...), password: str = Form(...)):
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM app_user WHERE username = %s AND password = %s", (username, password))
+    cursor.execute("SELECT * FROM Users WHERE username = %s AND password = %s", (username, password))
     account = cursor.fetchone()
     cursor.close()
     db.close()
@@ -87,15 +88,17 @@ async def recent_games(league: str = None):
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
 
-    query = ("SELECT GAME.league_id, LEAGUE.name as league_name, "
-             "GAME.home_team_id as home_team_id, GAME.away_team_id as away_team_id, "
-             "home.name as home_team, away.name as away_team, "
-             "game.home_team_score, game.away_team_score, game.date FROM GAME "
-             "LEFT JOIN LEAGUE ON GAME.league_id = LEAGUE.id "
-             "LEFT JOIN TEAM as home on GAME.home_team_id = home.id "
-             "LEFT JOIN TEAM as away on GAME.away_team_id = away.id ")
+    query = ("""SELECT Matches.match_id, Matches.date, Matches.match_location,
+                       Matches.league_id, Leagues.leaguename, 
+                       Matches.hometeam_id, Matches.awayteam_id,
+                       home.teamname as home_team, away.teamname as away_team, 
+                       Matches.hometeam_score, Matches.awayteam_score
+                FROM Matches 
+                LEFT JOIN Leagues ON Matches.league_id = Leagues.league_id
+                LEFT JOIN Teams as home on Matches.hometeam_id = home.team_id 
+                LEFT JOIN Teams as away on Matches.awayteam_id = away.team_id """)
     if league and league != 'all':
-        query += "WHERE LEAGUE.id = %s"
+        query += "WHERE Leagues.league_id = %s"
         cursor.execute(query, (league,))
     else:
         cursor.execute(query)
@@ -110,7 +113,7 @@ async def recent_games(league: str = None):
 async def get_all_leagues():
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM LEAGUE;")
+    cursor.execute("SELECT * FROM Leagues;")
     leagues = cursor.fetchall()
     cursor.close()
     db.close()
@@ -123,9 +126,9 @@ async def get_team_player(team: str = None):
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
 
-    query = ("SELECT * FROM PLAYER")
+    query = ("SELECT * FROM Players ")
     if team and team != 'all':
-        query += "WHERE team.id = %s"
+        query += "WHERE team_id = %s"
         cursor.execute(query, (team,))
     else:
         cursor.execute(query)
@@ -136,16 +139,58 @@ async def get_team_player(team: str = None):
     return players
 
 ##### Number of match win/lose/draw by team
-# TBD check queries win_by_team.sql
-# @app.get("/teams/stats")
-# async def get_teams_stat(team: str = None):
-#     db = get_db_connection()
-#     cursor = db.cursor(dictionary=True)
-#     cursor.execute()
-#     leagues = cursor.fetchall()
-#     cursor.close()
-#     db.close()
-#     return leagues
+##TBD check queries Team_Stats.sql
+@app.get("/teams/stats")
+async def get_teams_stat(team: str = None):
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    query = ("""WITH match_status as (
+            SELECT Matches.match_id, 
+                    CASE WHEN (hometeam_score = awayteam_score) THEN 1 
+                        ELSE 0 END AS draw, 
+                    CASE WHEN (hometeam_score > awayteam_score) THEN hometeam_id \
+                        WHEN (hometeam_score < awayteam_score) THEN awayteam_id \
+                        ELSE hometeam_id END AS win_team, \
+                    CASE WHEN (hometeam_score > awayteam_score) THEN awayteam_id \
+                        WHEN (hometeam_score < awayteam_score) THEN hometeam_id \
+                        ELSE awayteam_id END AS lose_team \
+            FROM Matches
+            ), 
+
+            team_win as (
+            SELECT Teams.team_id, count(match_status.match_id) as win
+            FROM Teams
+            LEFT JOIN match_status on Teams.team_id = match_status.win_team and match_status.draw = 0
+            GROUP BY Teams.team_id
+            ),
+
+            team_lose as (
+            SELECT Teams.team_id, count(match_status.match_id) as lose
+            FROM Teams
+            LEFT JOIN match_status on Teams.team_id = match_status.lose_team and match_status.draw = 0
+            GROUP BY Teams.team_id
+            ), 
+
+            team_draw as (
+            SELECT Teams.team_id, count(a.match_id) + count(b.match_id)  as draw
+            FROM Teams
+            LEFT JOIN match_status as a on Teams.team_id = a.win_team and a.draw = 1
+            LEFT JOIN match_status as b on Teams.team_id = b.lose_team and b.draw = 1
+            GROUP BY Teams.team_id
+            )
+
+            SELECT Teams.team_id, Teams.teamname, Teams.league_id, team_win.win, team_lose.lose, team_draw.draw
+            FROM Teams
+            LEFT JOIN team_win on Teams.team_id = team_win.team_id
+            LEFT JOIN team_lose on Teams.team_id = team_lose.team_id
+            LEFT JOIN team_draw on Teams.team_id = team_draw.team_id
+            """)
+    cursor.execute(query)
+    leagues = cursor.fetchall()
+    cursor.close()
+    db.close()
+    return leagues
 
 if __name__ == '__main__':
     uvicorn.run(app, port=5001)
