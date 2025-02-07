@@ -1,8 +1,13 @@
 # cs348_project
 
+## Setup the project
+
+You have to setup the project on your local machine, and please follow the following steps in sequential order
+
 Step 1: Install the requirements under the backend folder
 
 ```
+cd backend/routes
 pip install -r requirements.txt
 ```
 
@@ -13,7 +18,7 @@ if you are using windows, you can download the MySQL installer from the official
 if you are using mac, you can use homebrew to install MySQL.
 ```
 
-Step 3: Access the MySQL server
+Step 3: Test access the MySQL server
 
 ```
 mysql -u root -p
@@ -27,18 +32,27 @@ Step 4: Once you done with the above steps, you can create a .env file in the ba
 
 ```
 DB_HOST=localhost
-DB_NAME='your_database_name'
-DB_USER='your_username'
-DB_PASSWORD='your_password'
+DB_NAME=soccer_app
+DB_USER=your_username
+DB_PASSWORD=your_password
 ```
 
-Step 5: Run the app
+Step 5: Auto-populate the database
 
 ```
-python app.py
+We have created an auto-populate script for you to populate the database, run following command to populate the database:
+mysql -u root -p < database/newCreateTables.sql
+python database/new_data_sets/newPopulateTables.py
 ```
 
-Step 6: Run the frontend
+Step 6: Run the backend
+
+```
+python backend/routes/app.py
+this will start the backend server with fastapi, you can access the api documentation locally with your local host.
+```
+
+Step 7: Run the frontend
 navigate to the frontend folder and run the following command:
 
 ```
