@@ -5,6 +5,7 @@ export const signUp = async (userData) => {
         const formData = new FormData();
         formData.append('username', userData.username);
         formData.append('password', userData.password);
+        formData.append('email', userData.email);
 
         const response = await api.post('/signup', formData, {
         headers: {
