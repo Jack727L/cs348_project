@@ -1,5 +1,7 @@
-from flask import Flask, render_template, request, jsonify
-from flask_cors import CORS
+from fastapi import FastAPI, HTTPException, Form, Request, Depends
+from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
+import uvicorn
 import mysql.connector
 from mysql.connector import Error
 import os
@@ -7,8 +9,16 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-app = Flask(__name__)
-CORS(app)
+app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 def get_db_connection():
     try:
@@ -24,124 +34,118 @@ def get_db_connection():
         print(f"Error connecting to MySQL: {e}")
         return None
 
-# @app.route('/')
-# def index():
-#     connection = get_db_connection()
-#     if connection:
-#         cursor = connection.cursor(dictionary=True)
-#         cursor.execute("SELECT * FROM student;")
-#         rows = cursor.fetchall()
-#         cursor.close()
-#         connection.close()
-#         return render_template('index.html', students=rows)
-#     else:
-#         return "Failed to connect to the database."
 
-@app.route('/')
-def home():
-    connection = mysql.connector.connect(
-            host=os.getenv('DB_HOST', 'localhost'),
-            database=os.getenv('DB_NAME'),
-            user=os.getenv('DB_USER'),
-            password=os.getenv('DB_PASSWORD')
-    )
-    if connection.is_connected():
-        return "Welcome to CS348~~ Connected to Database."
+@app.get("/")
+async def home():
+    connection = get_db_connection()
+    if connection and connection.is_connected():
+        return {"message": "Welcome to CS348~~ Connected to Database."}
     else:
-        return "Welcome to CS348~~"
-    
-# Route for sign up
-@app.route('/signup', methods=['POST'])
-def signup():
-    username = request.form['username']
-    password = request.form['password']
+        return {"message": "Welcome to CS348~~"}
 
+##### Sign Up endpoint
+@app.post("/signup")
+async def signup(username: str = Form(...), password: str = Form(...)):
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM app_user WHERE username = %s", (username, ))
+    cursor.execute("SELECT * FROM app_user WHERE username = %s", (username,))
     user_exist = cursor.fetchone() is not None
 
     if user_exist:
-        return jsonify({"error": "Username already exists."}), 401
-    
-    cursor.execute("INSERT INTO app_user(username, password, role) VALUES (%s, %s, 'user'); ", (username, password))
+        raise HTTPException(status_code=401, detail="Username already exists.")
+
+    cursor.execute("INSERT INTO app_user(username, password, role) VALUES (%s, %s, 'user');", (username, password))
     db.commit()
 
     cursor.close()
     db.close()
-        
-    return jsonify({"message": "User registered successfully. Please log in."}), 201
+    return JSONResponse(content={"message": "User registered successfully. Please log in."}, status_code=201)
 
-# Route for login
-@app.route('/login', methods=['POST'])
-def login():
-    username = request.form['username']
-    password = request.form['password']
-
+##### Log In endpoint
+@app.post("/login")
+async def login(username: str = Form(...), password: str = Form(...)):
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
     cursor.execute("SELECT * FROM app_user WHERE username = %s AND password = %s", (username, password))
     account = cursor.fetchone()
-
     cursor.close()
     db.close()
 
     if account:
-        return jsonify({"message": "Login successful!", "id": account['id']}), 200
+        return {"message": "Login successful!", "id": account['id']}
     else:
-        return jsonify({"error": "Incorrect username or password."}), 400
+        raise HTTPException(status_code=400, detail="Incorrect username or password.")
 
-# Route for logout    
-@app.route('/logout', methods=['POST'])
-def logout():
-    return jsonify({"message": "Logout successful."}), 200
 
-# Route for recent games
-@app.route('/recentgames',  methods=['GET'])
-def recentGames():
-    league = request.args.get('league')
+@app.post("/logout")
+async def logout():
+    return {"message": "Logout successful."}
 
+##### Recent Games by league_id endpoints
+@app.get("/recentgames")
+async def recent_games(league: str = None):
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
-    # Might need to modify query for actual dataset to return most recent 30/50 games
 
-    if (league == 'all'): 
-        cursor.execute("SELECT LEAGUE.name as league_name, \
-                    home.name as home_team,\
-                    away.name as away_team, \
-                    game.home_team_score, game.away_team_score,  \
-                    game.date \
-                    FROM GAME \
-                    LEFT JOIN LEAGUE ON GAME.league_id = LEAGUE.id \
-                    LEFT JOIN TEAM as home on GAME.home_team_id = home.id \
-                    LEFT JOIN TEAM as away on GAME.away_team_id = away.id ")
-    else: 
-        cursor.execute("SELECT LEAGUE.name as league_name, \
-                    home.name as home_team,\
-                    away.name as away_team, \
-                    game.home_team_score, game.away_team_score,  \
-                    game.date \
-                    FROM GAME \
-                    LEFT JOIN LEAGUE ON GAME.league_id = LEAGUE.id \
-                    LEFT JOIN TEAM as home on GAME.home_team_id = home.id \
-                    LEFT JOIN TEAM as away on GAME.away_team_id = away.id \
-                    WHERE LEAGUE.name = %s", (league, ))
-    
+    query = ("SELECT GAME.league_id, LEAGUE.name as league_name, "
+             "GAME.home_team_id as home_team_id, GAME.away_team_id as away_team_id, "
+             "home.name as home_team, away.name as away_team, "
+             "game.home_team_score, game.away_team_score, game.date FROM GAME "
+             "LEFT JOIN LEAGUE ON GAME.league_id = LEAGUE.id "
+             "LEFT JOIN TEAM as home on GAME.home_team_id = home.id "
+             "LEFT JOIN TEAM as away on GAME.away_team_id = away.id ")
+    if league and league != 'all':
+        query += "WHERE LEAGUE.id = %s"
+        cursor.execute(query, (league,))
+    else:
+        cursor.execute(query)
+
     games = cursor.fetchall()
-
     cursor.close()
     db.close()
-    return jsonify(games)
+    return games
 
-@app.route('/leagues', methods=['GET'])
-def get_all_leagues():
+##### Leagues info 
+@app.get("/leagues")
+async def get_all_leagues():
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
     cursor.execute("SELECT * FROM LEAGUE;")
     leagues = cursor.fetchall()
     cursor.close()
     db.close()
-    return jsonify(leagues)
+    return leagues
+
+############ TEAM Statistics ###############
+##### Players by team_id
+@app.get("/teams/players")
+async def get_team_player(team: str = None):
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    query = ("SELECT * FROM PLAYER")
+    if team and team != 'all':
+        query += "WHERE team.id = %s"
+        cursor.execute(query, (team,))
+    else:
+        cursor.execute(query)
+
+    players = cursor.fetchall()
+    cursor.close()
+    db.close()
+    return players
+
+##### Number of match win/lose/draw by team
+# TBD check queries win_by_team.sql
+# @app.get("/teams/stats")
+# async def get_teams_stat(team: str = None):
+#     db = get_db_connection()
+#     cursor = db.cursor(dictionary=True)
+#     cursor.execute()
+#     leagues = cursor.fetchall()
+#     cursor.close()
+#     db.close()
+#     return leagues
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5001)
+    uvicorn.run(app, port=5001)

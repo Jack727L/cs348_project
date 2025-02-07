@@ -25,7 +25,7 @@ const RecentGames = () => {
       try {
         const leagues = await fetchLeagues();
         const leagueCategories = leagues.map(league => ({
-          id: league.name,
+          id: league.id,
           label: league.name,
         }));
         setCategories([{ id: 'all', label: 'All Games' }, ...leagueCategories]);
