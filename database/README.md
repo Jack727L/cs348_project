@@ -28,7 +28,9 @@ DB_PASSWORD='your_password'
 Step 4: Populate sample data to tables
 
 ```
-python populateTables.py
+We have created an auto-populate script for you to populate the database, run following command to populate the database:
+mysql -u root -p < database/CreateTables.sql
+python database/new_data_sets/newPopulateTables.py
 ```
 
 You should see messages saying that "Data imported successfully."
@@ -39,9 +41,8 @@ Step 5: Double-check that sample data has been loaded
 SELECT * FROM APP_USERS;
 ```
 
-OR: to populate the tables, run the following commands:
+OR: to re-populate the tables if you made edits, run the following commands:
 
 ```
-mysql -u root -p < database/createTables.sql
-python database/populateTables.py
+python database/new_data_sets/newPopulateTables.py
 ```
