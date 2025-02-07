@@ -1,18 +1,22 @@
 CREATE DATABASE IF NOT EXISTS soccer_app;
 USE soccer_app;
 
-DROP TABLE IF EXISTS Users;
-DROP TABLE IF EXISTS Roles;
-DROP TABLE IF EXISTS Teams;
-DROP TABLE IF EXISTS Leagues;
-DROP TABLE IF EXISTS Players;
-DROP TABLE IF EXISTS Matches;
-DROP TABLE IF EXISTS Statistics;
-DROP TABLE IF EXISTS FavoritePlayers;
-DROP TABLE IF EXISTS FavoriteTeams;
-DROP TABLE IF EXISTS Country;
+-- 1) Tables that depend on multiple parents:
+DROP TABLE IF EXISTS Statistics;       -- References Matches, Players
+DROP TABLE IF EXISTS FavoritePlayers;  -- References Users, Players
+DROP TABLE IF EXISTS FavoriteTeams;    -- References Users, Teams
+-- 2) Tables that depend on others:
+DROP TABLE IF EXISTS Matches;          -- References Teams, Leagues
+DROP TABLE IF EXISTS Players;          -- References Teams, Country
+DROP TABLE IF EXISTS Teams;            -- References Leagues
+DROP TABLE IF EXISTS Users;            -- References Roles
+-- 3) Tables with minimal or no dependencies:
+DROP TABLE IF EXISTS Leagues;          -- References Country
+DROP TABLE IF EXISTS Roles;            -- No parent references, but needed by Users
+DROP TABLE IF EXISTS Country;          -- No further dependencies
 
--- Create Country table first (with AUTO_INCREMENT)
+
+-- Create Country table first
 CREATE TABLE Country(
     country_id INT PRIMARY KEY,
     countryname VARCHAR(100) NOT NULL UNIQUE,
@@ -31,7 +35,7 @@ CREATE TABLE Leagues(
 -- Create Roles
 CREATE TABLE Roles(
     role_id INT AUTO_INCREMENT PRIMARY KEY,
-    rolename VARCHAR(255) NOT NULL,
+    rolename VARCHAR(255) NOT NULL UNIQUE,
     CHECK (rolename <> '')
 );
 
@@ -47,9 +51,8 @@ CREATE TABLE Users(
 
 -- Create Teams
 CREATE TABLE Teams(
-    team_id INT AUTO_INCREMENT PRIMARY KEY,
+    team_id INT PRIMARY KEY,
     teamname VARCHAR(100) NOT NULL,
-    -- logo VARCHAR(255) NULL,
     league_id INT NOT NULL,
     CHECK (teamname <> ''),
     FOREIGN KEY (league_id) REFERENCES Leagues(league_id) ON DELETE CASCADE
