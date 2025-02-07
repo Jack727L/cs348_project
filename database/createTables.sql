@@ -1,81 +1,125 @@
 CREATE DATABASE IF NOT EXISTS soccer_app;
 USE soccer_app;
 
-DROP TABLE IF EXISTS FAVORITE_TEAM;
-DROP TABLE IF EXISTS GAME;
-DROP TABLE IF EXISTS PLAYER;
-DROP TABLE IF EXISTS TEAM;
-DROP TABLE IF EXISTS LEAGUE;
-DROP TABLE IF EXISTS COUNTRY;
-DROP TABLE IF EXISTS APP_USER;
+DROP TABLE IF EXISTS Users;
+DROP TABLE IF EXISTS Roles;
+DROP TABLE IF EXISTS Teams;
+DROP TABLE IF EXISTS Leagues;
+DROP TABLE IF EXISTS Players;
+DROP TABLE IF EXISTS Matches;
+DROP TABLE IF EXISTS Statistics;
+DROP TABLE IF EXISTS FavoritePlayers;
+DROP TABLE IF EXISTS FavoriteTeams;
+DROP TABLE IF EXISTS Country;
 
-CREATE TABLE COUNTRY (
-     id INT PRIMARY KEY,
-     name VARCHAR(100) NOT NULL UNIQUE
+-- Create Country table first (with AUTO_INCREMENT)
+CREATE TABLE Country(
+    country_id INT PRIMARY KEY,
+    countryname VARCHAR(100) NOT NULL UNIQUE,
+    CHECK (countryname <> '')
 );
 
-CREATE TABLE LEAGUE (
-    id INT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    country_id INT NOT NULL,
-    level INT DEFAULT 1,
-    FOREIGN KEY (country_id) REFERENCES COUNTRY(id)
+-- Create Leagues
+CREATE TABLE Leagues(
+    league_id INT PRIMARY KEY,
+    leaguename VARCHAR(100) NOT NULL,
+    league_nationality_id INT NULL,
+    CHECK (leaguename <> ''),
+    FOREIGN KEY (league_nationality_id) REFERENCES Country(country_id) ON DELETE SET NULL
 );
 
-CREATE TABLE TEAM (
-    id INT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    league_id INT NOT NULL,
-    logo VARCHAR(255) NULL,
-    ranking INT DEFAULT NULL,
-    wins INT DEFAULT 0,
-    draws INT DEFAULT 0,
-    losses INT DEFAULT 0,
-    FOREIGN KEY (league_id) REFERENCES LEAGUE(id)
+-- Create Roles
+CREATE TABLE Roles(
+    role_id INT AUTO_INCREMENT PRIMARY KEY,
+    rolename VARCHAR(255) NOT NULL,
+    CHECK (rolename <> '')
 );
 
-
-CREATE TABLE PLAYER (
-    id INT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    country_id INT NOT NULL,
-    team_id INT NULL,
-    height DECIMAL(4,1) NULL,
-    weight DECIMAL(5,2) NULL,
-    age INT NULL,
-    number INT NULL,
-    position ENUM('GK', 'DEF', 'MID', 'FWD') NOT NULL,
-    FOREIGN KEY (country_id) REFERENCES COUNTRY(id),
-    FOREIGN KEY (team_id) REFERENCES TEAM(id)
-);
-
-
-CREATE TABLE GAME (
-    id INT PRIMARY KEY,
-    league_id INT NOT NULL,
-    home_team_id INT NOT NULL,
-    away_team_id INT NOT NULL,
-    home_team_score INT DEFAULT 0,
-    away_team_score INT DEFAULT 0,
-    date DATE NOT NULL,
-    FOREIGN KEY (league_id) REFERENCES LEAGUE(id),
-    FOREIGN KEY (home_team_id) REFERENCES TEAM(id),
-    FOREIGN KEY (away_team_id) REFERENCES TEAM(id)
-);
-
-
-CREATE TABLE APP_USER (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+-- Create Users
+CREATE TABLE Users(
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    role ENUM('admin', 'user') DEFAULT 'user' NOT NULL
+    email VARCHAR(255) UNIQUE,
+    role_id INT,
+    FOREIGN KEY (role_id) REFERENCES Roles(role_id) ON DELETE SET NULL
 );
 
-CREATE TABLE FAVORITE_TEAM (
-    user_id INT NOT NULL,
+-- Create Teams
+CREATE TABLE Teams(
+    team_id INT AUTO_INCREMENT PRIMARY KEY,
+    teamname VARCHAR(100) NOT NULL,
+    -- logo VARCHAR(255) NULL,
+    league_id INT NOT NULL,
+    CHECK (teamname <> ''),
+    FOREIGN KEY (league_id) REFERENCES Leagues(league_id) ON DELETE CASCADE
+);
+
+-- Create Players
+CREATE TABLE Players(
+    player_id INT PRIMARY KEY,
+    playername VARCHAR(100) NOT NULL,
     team_id INT NOT NULL,
-    added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    position ENUM('GK', 'DEF', 'MID', 'FWD') NOT NULL,
+    player_nationality_id INT NULL,
+    age INT,
+    CHECK (playername <> ''),
+    CHECK (age IS NULL OR (age > 0)),
+    FOREIGN KEY (team_id) REFERENCES Teams(team_id) ON DELETE CASCADE,
+    FOREIGN KEY (player_nationality_id) REFERENCES Country(country_id) ON DELETE SET NULL
+);
+
+-- Create Matches
+CREATE TABLE Matches(
+    match_id INT PRIMARY KEY,
+    date DATE NOT NULL,
+    match_location VARCHAR(255) NOT NULL,
+    hometeam_score INT DEFAULT 0,
+    awayteam_score INT DEFAULT 0,
+    hometeam_id INT NOT NULL,
+    awayteam_id INT NOT NULL,
+    league_id INT NOT NULL,
+    CHECK (hometeam_score >= 0),
+    CHECK (awayteam_score >= 0),
+    CHECK (hometeam_id <> awayteam_id),
+    FOREIGN KEY (hometeam_id) REFERENCES Teams(team_id) ON DELETE CASCADE,
+    FOREIGN KEY (awayteam_id) REFERENCES Teams(team_id) ON DELETE CASCADE,
+    FOREIGN KEY (league_id) REFERENCES Leagues(league_id) ON DELETE CASCADE
+);
+
+-- Create Statistics
+CREATE TABLE Statistics(
+    match_id INT NOT NULL,
+    player_id INT NOT NULL,
+    goal INT NOT NULL DEFAULT 0,
+    pass_acc DECIMAL (5, 2) NOT NULL DEFAULT 0,
+    assist INT NOT NULL DEFAULT 0,
+    playtime INT NOT NULL DEFAULT 0,
+    PRIMARY KEY (match_id, player_id),
+    CHECK (goal >= 0),
+    CHECK (assist >= 0),
+    CHECK (playtime >= 0),
+    CHECK (pass_acc BETWEEN 0 AND 100),
+    FOREIGN KEY (match_id) REFERENCES Matches(match_id) ON DELETE CASCADE,
+    FOREIGN KEY (player_id) REFERENCES Players(player_id) ON DELETE CASCADE
+);
+
+-- Create FavoriteTeams
+CREATE TABLE FavoriteTeams(
+    user_id INT,
+    team_id INT,
+    dateAdded TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (user_id, team_id),
-    FOREIGN KEY (user_id) REFERENCES APP_USER(id) ON DELETE CASCADE,
-    FOREIGN KEY (team_id) REFERENCES TEAM(id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (team_id) REFERENCES Teams(team_id) ON DELETE CASCADE
+);
+
+-- Create FavoritePlayers
+CREATE TABLE FavoritePlayers(
+    user_id INT,
+    player_id INT,
+    dateAdded TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (user_id, player_id),
+    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (player_id) REFERENCES Players(player_id) ON DELETE CASCADE
 );
