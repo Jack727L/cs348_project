@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-// import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import TeamDetails from './TeamDetails';
-import { dummyTeamsData } from '../data/DummyTeamsData';
 import { fetchRecentGames, fetchLeagues } from '../api/recentGamesApi';
 import './RecentGames.css';
 
@@ -18,6 +17,8 @@ const RecentGames = () => {
   const [loadingLeagues, setLoadingLeagues] = useState(false);
   const [errorLeagues, setErrorLeagues] = useState(null);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     const getLeagues = async () => {
       setLoadingLeagues(true);
@@ -25,8 +26,8 @@ const RecentGames = () => {
       try {
         const leagues = await fetchLeagues();
         const leagueCategories = leagues.map(league => ({
-          id: league.id,
-          label: league.name,
+          id: league.league_id,
+          label: league.leaguename,
         }));
         setCategories([{ id: 'all', label: 'All Games' }, ...leagueCategories]);
       } catch (err) {
@@ -71,10 +72,13 @@ const RecentGames = () => {
     getRecentGames();
   }, [activeCategory]);
 
-  const handleTeamClick = (teamName, event) => {
+  const handleTeamClick = (teamId, event) => {
     event.stopPropagation();
-    const teamData = dummyTeamsData[teamName];
-    setSelectedTeam({ name: teamName, data: teamData });
+    if (teamId) {
+      navigate(`/team/${teamId}`);
+    } else {
+      console.error('Team ID is missing.');
+    }
   };
 
   const handleCategoryClick = (categoryId) => {
@@ -124,27 +128,27 @@ const RecentGames = () => {
                   <h3>{date}</h3>
                   {groupedMatches[date].map(match => (
                     <div
-                      key={`${match.home_team}-${match.away_team}-${match.date}`}
+                      key={match.match_id}
                       className="match-card"
-                      // onClick={() => navigate(`/game/${match.id}`)}
+                      // onClick={() => navigate(`/game/${match.match_id}`)}
                     >
                       <div className="match-info">
                         <span className="match-time">
                           {new Date(match.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </span>
-                        <span className="match-cup">{match.league_name}</span>
+                        <span className="match-cup">{match.leaguename}</span>
                         <span 
                           className="match-team1 clickable"
-                          onClick={(e) => handleTeamClick(match.home_team, e)}
+                          onClick={(e) => handleTeamClick(match.hometeam_id, e)}
                         >
                           {match.home_team}
                         </span>
                         <span className="match-score">
-                          {match.home_team_score} - {match.away_team_score}
+                          {match.hometeam_score} - {match.awayteam_score}
                         </span>
                         <span 
                           className="match-team2 clickable"
-                          onClick={(e) => handleTeamClick(match.away_team, e)}
+                          onClick={(e) => handleTeamClick(match.awayteam_id, e)}
                         >
                           {match.away_team}
                         </span>

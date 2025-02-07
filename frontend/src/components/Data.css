@@ -57,6 +57,9 @@
 }
 
 .team-row {
+  display: flex;
+  align-items: center;
+  padding: 3px 0;
   border-bottom: 1px solid #eee;
 }
 
