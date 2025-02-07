@@ -3,3 +3,6 @@ mysql-connector-python>=8.0,<9.0
 python-dotenv==1.0.1
 flask_cors==5.0.0
 pandas==2.2.3
+fastapi==0.115.8
+uvicorn==0.34.0
+python-multipart==0.0.20
