@@ -149,18 +149,27 @@
   text-decoration: underline;
 }
 
-.error-message {
-  background-color: #fff2f2;
-  color: #d32f2f;
+.message {
   padding: 6px 10px;
   border-radius: 4px;
   margin-bottom: 10px;
   margin-top: -4px;
   font-size: 14px;
-  border: 1px solid #ef5350;
-  box-shadow: 0 2px 4px rgba(211, 47, 47, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   position: relative;
   line-height: 1.2;
+}
+
+.message.error {
+  background-color: #fff2f2;
+  color: #d32f2f;
+  border: 1px solid #ef5350;
+}
+
+.message.success {
+  background-color: #f0fff4;
+  color: #276749;
+  border: 1px solid #48bb78;
 }
 
 .input-with-error {
@@ -182,18 +191,4 @@
 
 .form-group input.error {
   border-color: #c62828;
-}
-
-.success-message {
-  background-color: #f0fff4;
-  color: #276749;
-  padding: 6px 10px;
-  border-radius: 4px;
-  margin-bottom: 10px;
-  margin-top: -4px;
-  font-size: 14px;
-  border: 1px solid #48bb78;
-  box-shadow: 0 2px 4px rgba(72, 187, 120, 0.1);
-  position: relative;
-  line-height: 1.2;
 } 

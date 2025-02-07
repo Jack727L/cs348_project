@@ -17,14 +17,10 @@ const SignIn = () => {
     username: '',
     password: '',
     confirmPassword: '',
+    email: ''
   });
   const [user, setUser] = useState(null);
-  const [errors, setErrors] = useState({
-    signIn: '',
-    signUp: '',
-    password: ''
-  });
-  const [successMessage, setSuccessMessage] = useState('');
+  const [message, setMessage] = useState({ type: '', text: '' });
 
   useEffect(() => {
     const sessionUser = Cookies.get('panel_user');
@@ -48,14 +44,10 @@ const SignIn = () => {
     setSignUpData({
       username: '',
       password: '',
-      confirmPassword: ''
+      confirmPassword: '',
+      email: ''
     });
-    setErrors({
-      signIn: '',
-      signUp: '',
-      password: ''
-    });
-    setSuccessMessage('');
+    setMessage({ type: '', text: '' });
   };
 
   useEffect(() => {
@@ -83,20 +75,20 @@ const SignIn = () => {
       }));
       // Clear password match error when user types
       if (name === 'confirmPassword' || name === 'password') {
-        setErrors(prev => ({ ...prev, password: '' }));
-      }
-      // Check password match on every change
-      if (name === 'confirmPassword' && value !== signUpData.password) {
-        setErrors(prev => ({ ...prev, password: "Passwords don't match" }));
-      } else if (name === 'password' && value !== signUpData.confirmPassword && signUpData.confirmPassword) {
-        setErrors(prev => ({ ...prev, password: "Passwords don't match" }));
+        if (name === 'confirmPassword' && value !== signUpData.password) {
+          setMessage({ type: 'error', text: "Passwords don't match" });
+        } else if (name === 'password' && value !== signUpData.confirmPassword && signUpData.confirmPassword) {
+          setMessage({ type: 'error', text: "Passwords don't match" });
+        } else {
+          setMessage({ type: '', text: '' });
+        }
       }
     } else {
       setCredentials(prev => ({
         ...prev,
         [name]: value
       }));
-      setErrors(prev => ({ ...prev, signIn: '' })); // Clear sign in error when user types
+      setMessage({ type: '', text: '' }); // Clear message when user types
     }
   };
 
@@ -115,19 +107,20 @@ const SignIn = () => {
       setUser(userData);
       setIsSignedIn(true);
       setShowSignInForm(false);
+      clearForms();
     } catch (error) {
       console.error('Sign in error:', error);
-      setErrors(prev => ({ 
-        ...prev, 
-        signIn: error.error || 'Failed to sign in. Please try again.' 
-      }));
+      setMessage({ 
+        type: 'error', 
+        text: error.error || 'Failed to sign in. Please try again.' 
+      });
     }
   };
 
   const handleSignUp = async (e) => {
     e.preventDefault();
     if (signUpData.password !== signUpData.confirmPassword) {
-      setErrors(prev => ({ ...prev, password: "Passwords don't match" }));
+      setMessage({ type: 'error', text: "Passwords don't match" });
       return;
     }
     try {
@@ -135,13 +128,16 @@ const SignIn = () => {
       clearForms();
       setShowSignUpForm(false);
       setShowSignInForm(true);
-      setSuccessMessage('Successfully signed up! Please sign in with your credentials.');
+      setMessage({ 
+        type: 'success', 
+        text: 'Successfully signed up! Please sign in with your credentials.' 
+      });
     } catch (error) {
       console.error('Sign up error:', error);
-      setErrors(prev => ({ 
-        ...prev, 
-        signUp: error.error || 'Failed to sign up. Please try again.' 
-      }));
+      setMessage({ 
+        type: 'error', 
+        text: error.error || 'Failed to sign up. Please try again.' 
+      });
     }
   };
 
@@ -183,8 +179,11 @@ const SignIn = () => {
           {showSignInForm && (
             <div className="sign-in-dropdown">
               <form onSubmit={handleSignIn}>
-                {successMessage && <div className="success-message">{successMessage}</div>}
-                {errors.signIn && <div className="error-message">{errors.signIn}</div>}
+                {message.text && (
+                  <div className={`message ${message.type}`}>
+                    {message.text}
+                  </div>
+                )}
                 <div className="form-group">
                   <label htmlFor="username">Username</label>
                   <input
@@ -227,7 +226,11 @@ const SignIn = () => {
           {showSignUpForm && (
             <div className="sign-in-dropdown">
               <form onSubmit={handleSignUp}>
-                {errors.signUp && <div className="error-message">{errors.signUp}</div>}
+                {message.text && (
+                  <div className={`message ${message.type}`}>
+                    {message.text}
+                  </div>
+                )}
                 <div className="form-group">
                   <label htmlFor="signup-username">Username</label>
                   <input
@@ -235,6 +238,17 @@ const SignIn = () => {
                     id="signup-username"
                     name="username"
                     value={signUpData.username}
+                    onChange={(e) => handleInputChange(e, true)}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="signup-email">Email</label>
+                  <input
+                    type="email"
+                    id="signup-email"
+                    name="email"
+                    value={signUpData.email}
                     onChange={(e) => handleInputChange(e, true)}
                     required
                   />
@@ -261,9 +275,6 @@ const SignIn = () => {
                       onChange={(e) => handleInputChange(e, true)}
                       required
                     />
-                    {errors.password && (
-                      <span className="inline-error">{errors.password}</span>
-                    )}
                   </div>
                 </div>
                 <button type="submit" className="submit-button">
