@@ -73,7 +73,7 @@ async def login(username: str = Form(...), password: str = Form(...)):
     db.close()
 
     if account:
-        return {"message": "Login successful!", "id": account['id']}
+        return {"message": "Login successful!", "id": account['user_id']}
     else:
         raise HTTPException(status_code=400, detail="Incorrect username or password.")
 
