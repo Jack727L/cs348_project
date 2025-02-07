@@ -149,6 +149,7 @@ print("Player Data imported successfully!")
 ### Load statistics data
 csv_file = 'database/new_data_sets/sample_statistics.csv'
 data = pd.read_csv(csv_file)
+data['pass_acc'] = data['pass_acc'].apply(lambda x: f"{x}:.2f")
 
 for index, row in data.iterrows():
     cursor.execute(
