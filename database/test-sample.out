@@ -1,0 +1,10 @@
+match_id	date	match_location	league_id	leaguename	hometeam_id	awayteam_id	home_team	away_team	hometeam_score	awayteam_score
+1	2025-01-20	Stadium Alpha	1	Premier League	2	4	Liverpool	Arsenal	3	2
+2	2025-01-19	Stadium Beta	1	Premier League	2	3	Liverpool	Manchester United	2	2
+3	2025-01-16	Stadium Gamma	1	Premier League	2	6	Liverpool	Everton	3	2
+4	2025-01-20	Stadium Delta	1	Premier League	1	2	Chelsea	Liverpool	1	0
+5	2025-01-16	Stadium Epsilon	1	Premier League	3	4	Manchester United	Arsenal	3	2
+6	2025-01-20	Stadium Zeta	1	Premier League	3	1	Manchester United	Chelsea	2	1
+7	2025-01-15	Stadium Eta	1	Premier League	3	2	Manchester United	Liverpool	2	1
+8	2025-01-21	Stadium Theta	1	Premier League	5	6	Leicester City	Everton	1	0
+9	2025-01-21	Stadium Iota	1	Premier League	4	6	Arsenal	Everton	1	0
