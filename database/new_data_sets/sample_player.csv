@@ -1,0 +1,85 @@
+player_id,playername,player_nationality_id,team_id,age,position
+1,Kepa Arrizabalaga,2,1,29,GK
+2,Mason Mount,1,1,25,MID
+3,Reece James,1,1,24,DEF
+4,Kai Havertz,3,1,24,MID
+5,N'Golo Kanté,15,1,31,MID
+6,Ben Chilwell,1,1,26,DEF
+7,Alisson Becker,4,2,31,GK
+8,Virgil van Dijk,5,2,30,DEF
+9,Mohamed Salah,6,2,30,FWD
+10,Trent Alexander-Arnold,1,2,23,DEF
+11,Roberto Firmino,4,2,33,FWD
+12,Jordan Henderson,1,2,31,MID
+13,David de Gea,2,3,32,GK
+14,Harry Maguire,1,3,30,DEF
+15,Bruno Fernandes,7,3,28,MID
+16,Marcus Rashford,1,3,25,FWD
+17,Luke Shaw,1,3,27,DEF
+18,Paul Pogba,15,3,28,MID
+19,Bernd Leno,3,4,31,GK
+20,Bukayo Saka,1,4,22,MID
+21,Martin Ødegaard,8,4,26,MID
+22,Gabriel Martinelli,4,4,23,FWD
+23,Aaron Ramsdale,1,4,27,GK
+24,William Saliba,15,4,22,DEF
+25,Kasper Schmeichel,9,5,35,GK
+26,Jamie Vardy,1,5,36,FWD
+27,Youri Tielemans,10,5,23,MID
+28,Wilfred Ndidi,11,5,27,MID
+29,Ayoze Pérez,2,5,31,MID
+30,James Maddison,1,5,27,MID
+31,Jordan Pickford,1,6,29,GK
+32,Dominic Calvert-Lewin,1,6,28,FWD
+33,Richarlison,4,6,26,FWD
+34,James Rodríguez,12,6,32,MID
+35,Dwight McNeil,1,6,24,MID
+36,Demarai Gray,1,6,25,FWD
+37,Manuel Neuer,3,7,36,GK
+38,Joshua Kimmich,3,7,28,MID
+39,Jamal Musiala,3,7,21,MID
+40,Serge Gnabry,3,7,29,FWD
+41,Leroy Sané,3,7,25,FWD
+42,Thomas Müller,3,7,31,FWD
+43,Gregor Kobel,13,8,24,GK
+44,Marco Reus,3,8,33,FWD
+45,Mats Hummels,3,8,32,DEF
+46,Nico Schlotterbeck,3,8,22,DEF
+47,Erling Haaland,8,8,22,FWD
+48,Jude Bellingham,1,8,18,MID
+49,Peter Gulacsi,14,9,33,GK
+50,Christopher Nkunku,15,9,25,FWD
+51,Dani Olmo,2,9,26,MID
+52,Marcel Sabitzer,16,9,28,MID
+53,Willi Orban,3,9,30,DEF
+54,Angeliño,2,9,23,DEF
+55,Ralf Fährmann,3,10,37,GK
+56,Simon Terodde,3,10,33,FWD
+57,Amine Harit,17,10,25,MID
+58,Alexander Meyer,3,10,27,DEF
+59,Ozan Kabak,23,10,23,DEF
+60,Felix Platte,3,10,24,MID
+61,Thibaut Courtois,10,11,30,GK
+62,David Alaba,16,11,30,DEF
+63,Vinícius Júnior,4,11,23,FWD
+64,Luka Modrić,18,11,37,MID
+65,Karim Benzema,15,11,33,FWD
+66,Sergio Ramos,2,11,35,DEF
+67,Marc-André ter Stegen,3,12,31,GK
+68,Frenkie de Jong,5,12,26,MID
+69,Robert Lewandowski,19,12,34,FWD
+70,Ousmane Dembélé,15,12,25,FWD
+71,Pedri,2,12,20,MID
+72,Ansu Fati,2,12,18,FWD
+73,Jan Oblak,20,13,31,GK
+74,Koke,2,13,32,MID
+75,João Félix,7,13,23,FWD
+76,Luis Suárez,21,13,36,FWD
+77,Marcos Llorente,2,13,28,MID
+78,José Giménez,21,13,28,DEF
+79,Yassine Bounou,17,14,31,GK
+80,Jesús Navas,2,14,36,MID
+81,Lucas Ocampos,22,14,28,FWD
+82,Pablo Sarabia,2,14,28,MID
+83,Marcos Acuña,22,14,30,DEF
+84,Joan Jordán,2,14,26,MID

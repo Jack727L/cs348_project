@@ -49,7 +49,7 @@ CREATE TABLE Users(
 CREATE TABLE Teams(
     team_id INT AUTO_INCREMENT PRIMARY KEY,
     teamname VARCHAR(100) NOT NULL,
-    logo VARCHAR(255) NULL,
+    -- logo VARCHAR(255) NULL,
     league_id INT NOT NULL,
     CHECK (teamname <> ''),
     FOREIGN KEY (league_id) REFERENCES Leagues(league_id) ON DELETE CASCADE
@@ -78,11 +78,13 @@ CREATE TABLE Matches(
     awayteam_score INT DEFAULT 0,
     hometeam_id INT NOT NULL,
     awayteam_id INT NOT NULL,
+    league_id INT NOT NULL,
     CHECK (hometeam_score >= 0),
     CHECK (awayteam_score >= 0),
     CHECK (hometeam_id <> awayteam_id),
     FOREIGN KEY (hometeam_id) REFERENCES Teams(team_id) ON DELETE CASCADE,
-    FOREIGN KEY (awayteam_id) REFERENCES Teams(team_id) ON DELETE CASCADE
+    FOREIGN KEY (awayteam_id) REFERENCES Teams(team_id) ON DELETE CASCADE,
+    FOREIGN KEY (league_id) REFERENCES Leagues(league_id) ON DELETE CASCADE
 );
 
 -- Create Statistics
