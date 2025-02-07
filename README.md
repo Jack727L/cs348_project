@@ -41,7 +41,7 @@ Step 5: Auto-populate the database
 
 ```
 We have created an auto-populate script for you to populate the database, run following command to populate the database:
-mysql -u root -p < database/newCreateTables.sql
+mysql -u root -p < database/CreateTables.sql
 python database/new_data_sets/newPopulateTables.py
 ```
 
