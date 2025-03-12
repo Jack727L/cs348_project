@@ -32,7 +32,6 @@ const NationalityDropdown = ({ value, onChange }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // When the dropdown is opened and no options are loaded, fetch them.
   useEffect(() => {
     if (open && nationalityOptions.length === 0) {
       setLoading(true);

@@ -17,16 +17,13 @@ const Players = () => {
   const [searchName, setSearchName] = useState('');
   const [searchTeam, setSearchTeam] = useState('');
   const [searchPosition, setSearchPosition] = useState('');
-  const [searchNationality, setSearchNationality] = useState(null); // now an object
+  const [searchNationality, setSearchNationality] = useState(null);
 
-  // Holds the active search query (if any)
   const [searchQuery, setSearchQuery] = useState({});
 
-  // A trigger state to force refresh (in case searchQuery is unchanged)
   const [searchTrigger, setSearchTrigger] = useState(0);
 
   const positions = ['GK', 'MID', 'DEF', 'FWD'];
-  // static nationalities array removed
 
   useEffect(() => {
     setPageInput(page);
@@ -36,7 +33,6 @@ const Players = () => {
       setError(null);
       try {
         let data;
-        // If search criteria exist, call the search endpoint
         if (Object.keys(searchQuery).length > 0) {
           const queryParams = { ...searchQuery, page, page_size: pageSize };
           console.log('Searching with params:', queryParams);
@@ -74,7 +70,6 @@ const Players = () => {
     }
   };
 
-  // Build the query from the search fields and start a new search
   const handleSearch = (e) => {
     e.preventDefault();
     const query = {};
@@ -82,15 +77,13 @@ const Players = () => {
     if (searchTeam.trim() !== '') query.team = searchTeam.trim();
     if (searchPosition.trim() !== '') query.position = searchPosition.trim();
     if (searchNationality && searchNationality.country_id) {
-      // Using the correct parameter name ("nationality")
       query.nationality = searchNationality.country_id;
     }
     setPage(1);
     setSearchQuery(query);
-    setSearchTrigger(prev => prev + 1); // Force the effect to re-run even if query is unchanged
+    setSearchTrigger(prev => prev + 1);
   };
 
-  // Clear search fields and reset to the regular players list
   const handleClearSearch = () => {
     setSearchName('');
     setSearchTeam('');
