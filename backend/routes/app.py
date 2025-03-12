@@ -88,7 +88,14 @@ async def logout():
 ##### Search player endpoint
 # Search for player by name, team, position & nationality
 @app.get("/player")
-async def search_player(name: str = None, team: str = None, position: str = None, nationality: str = None):
+async def search_player(
+    name: str = None, 
+    team: str = None, 
+    position: str = None, 
+    nationality: int = None,
+    page: int = 1,
+    page_size: int = 10
+):
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
 
@@ -107,16 +114,21 @@ async def search_player(name: str = None, team: str = None, position: str = None
         params.append(f"%{name.lower()}%")
     
     if team:
-        query += " AND LOWER(teamname) LIKE %s"
-        params.append(f"%{team.lower()}%")
+        query += " AND Players.team_id = %s"
+        params.append(team)
 
     if position:
         query += " AND LOWER(position) LIKE %s"
         params.append(f"%{position.lower()}%")
 
-    if nationality:
-        query += " AND LOWER(countryname) LIKE %s"
-        params.append(f"%{nationality.lower()}%")
+    if nationality is not None:
+        query += " AND Players.player_nationality_id = %s"
+        params.append(nationality)
+    
+    offset = (page - 1) * page_size
+    query += " LIMIT %s OFFSET %s"
+    params.append(page_size)
+    params.append(offset)
 
     cursor.execute(query, params)
     results = cursor.fetchall()
@@ -125,8 +137,8 @@ async def search_player(name: str = None, team: str = None, position: str = None
     db.close()
 
     if not results:
-        raise HTTPException(status_code=404, detail="Player not found.")
-    
+        return JSONResponse(content={"message": "No players found", "results": []}, status_code=200)
+
     return results
 
 ##### Search game endpoint
@@ -471,6 +483,43 @@ async def get_team_details(team: str = None):
         },
         "players": players
     }
+
+@app.get("/players")
+async def get_all_players(page: int = 1, page_size: int = 10):
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    offset = (page - 1) * page_size
+    query = """SELECT 
+                   p.player_id, 
+                   p.playername, 
+                   p.position, 
+                   p.player_nationality_id, 
+                   p.age, 
+                   t.teamname, 
+                   c.countryname AS nationality
+               FROM Players p
+               LEFT JOIN Teams t ON p.team_id = t.team_id
+               LEFT JOIN Country c ON p.player_nationality_id = c.country_id
+               LIMIT %s OFFSET %s"""
+    cursor.execute(query, (page_size, offset))
+    players = cursor.fetchall()
+
+    cursor.close()
+    db.close()
+
+    if not players:
+        raise HTTPException(status_code=404, detail="No players found.")
+
+    return players
+
+@app.get("/nationality")
+async def get_nationality():
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM Country;")
+    nationality = cursor.fetchall()
+    return nationality
 
 if __name__ == '__main__':
     uvicorn.run(app, port=5001)
