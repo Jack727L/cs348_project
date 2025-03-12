@@ -19,3 +19,19 @@ export const fetchLeagues = async () => {
     throw error.response ? error.response.data : { message: 'An unexpected error occurred' };
   }
 };
+
+export const searchGames = async ({ start_date, end_date, league }) => {
+  try {
+    const response = await api.get('/game', { 
+      params: { 
+        start_date, 
+        end_date, 
+        league 
+      } 
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error searching games:', error);
+    throw error.response ? error.response.data : { message: 'An unexpected error occurred' };
+  }
+};

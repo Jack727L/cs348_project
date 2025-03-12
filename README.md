@@ -1,5 +1,13 @@
 # cs348_project
 
+# If using python3
+
+You have to create an venv:
+python3 -m venv venv
+
+source venv/bin/activate
+
+
 ## Setup the project
 
 You have to setup the project on your local machine, and please follow the following steps in sequential order
@@ -42,7 +50,7 @@ Step 5: Auto-populate the database
 ```
 We have created an auto-populate script for you to populate the database, run following command to populate the database:
 mysql -u root -p < database/createTables.sql
-python database/new_data_sets/populateTables.py
+python3 database/new_data_sets/populateTables.py
 ```
 
 Step 6: Run the backend

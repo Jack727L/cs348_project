@@ -133,7 +133,7 @@ async def search_player(name: str = None, team: str = None, position: str = None
 # Search game between start_date and end_date by league
 # start_date and end_date in form "yyyy-mm-dd"
 @app.get("/game")
-async def search_game(start_date: str = None, end_date: str = None, league: str = None):
+async def search_game(start_date: str = None, end_date: str = None, league: int = None):
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
 
@@ -149,7 +149,7 @@ async def search_game(start_date: str = None, end_date: str = None, league: str 
                 WHERE 1 = 1
             """
     params = []
-    
+    print(start_date, end_date, league)
     if start_date:
         query += " AND date >=  %s"
         params.append(start_date)
@@ -159,8 +159,8 @@ async def search_game(start_date: str = None, end_date: str = None, league: str 
         params.append(end_date)
     
     if league:
-        query += " AND LOWER(leaguename) LIKE %s"
-        params.append(f"%{league.lower()}%")
+        query += " AND Matches.league_id = %s"
+        params.append(league)
 
     query += " ORDER BY date"
 
