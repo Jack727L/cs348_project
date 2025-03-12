@@ -79,7 +79,7 @@ const SearchGames = ({ onSearchResults, onReset }) => {
                     </select>
                 </div>
                 <button type="submit">Search</button>
-                <button type="button" onClick={handleReset}>Reset</button>
+                <button type="button" onClick={handleReset}>Clear</button>
             </form>
         </div>
     );
