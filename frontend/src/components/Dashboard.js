@@ -1,12 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import RecentGames from './RecentGames';
 import Data from './Data';
 import Players from './Players';
 import SignIn from './SignIn';
+import Favorites from './Favorites';
 import './Dashboard.css';
 
 const Dashboard = () => {
+  const location = useLocation();
   const [activeTab, setActiveTab] = useState('recentGames');
+
+  // Update active tab based on navigation state
+  useEffect(() => {
+    if (location.state?.activeTab) {
+      setActiveTab(location.state.activeTab);
+      // Clear the state after using it
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   return (
     <div className="dashboard">
@@ -34,8 +46,14 @@ const Dashboard = () => {
             >
               Data
             </button>
+            <button
+              className={`top-tab ${activeTab === 'favorites' ? 'active' : ''}`}
+              onClick={() => setActiveTab('favorites')}
+            >
+              My Favorites
+            </button>
           </div>
-          <SignIn />
+          <SignIn setActiveTab={setActiveTab} />
         </div>
       </div>
 
@@ -43,6 +61,7 @@ const Dashboard = () => {
         {activeTab === 'recentGames' && <RecentGames />}
         {activeTab === 'data' && <Data />}
         {activeTab === 'players' && <Players />}
+        {activeTab === 'favorites' && <Favorites />}
       </div>
     </div>
   );
