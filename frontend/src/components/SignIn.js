@@ -3,7 +3,7 @@ import Cookies from 'js-cookie';
 import { signIn, signUp, signOut } from '../api/authApi';
 import './SignIn.css';
 
-const SignIn = () => {
+const SignIn = ({ setActiveTab }) => {
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [showSignInForm, setShowSignInForm] = useState(false);
@@ -108,6 +108,8 @@ const SignIn = () => {
       setIsSignedIn(true);
       setShowSignInForm(false);
       clearForms();
+      setActiveTab('recentGames');
+      window.location.reload();
     } catch (error) {
       console.error('Sign in error:', error);
       setMessage({ 
@@ -148,6 +150,8 @@ const SignIn = () => {
       setUser(null);
       setIsSignedIn(false);
       setShowDropdown(false);
+      setActiveTab('recentGames');
+      window.location.reload();
     } catch (error) {
       console.error('Sign out error:', error);
       alert(error.error || 'Failed to sign out. Please try again.');

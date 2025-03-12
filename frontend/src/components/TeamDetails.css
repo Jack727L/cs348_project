@@ -123,3 +123,16 @@
   align-items: center;
   gap: 16px;
 }
+
+.team-name-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.player-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}

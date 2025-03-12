@@ -221,7 +221,7 @@ async def view_fav_player(userid: str):
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
 
-    query = ("""SELECT f.user_id, f.player_id, p.playername, t.teamname, p.position 
+    query = ("""SELECT f.user_id, f.player_id, p.playername, t.teamname, p.position, f.dateAdded 
              FROM FavoritePlayers f
              LEFT JOIN Players p 
              ON f.player_id = p.player_id
@@ -270,7 +270,7 @@ async def view_fav_team(userid: str):
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
 
-    query = ("""SELECT f.user_id, f.team_id, t.teamname, l.leaguename, c.countryname
+    query = ("""SELECT f.user_id, f.team_id, t.teamname, l.leaguename, c.countryname, f.dateAdded
              FROM FavoriteTeams f
              LEFT JOIN Teams t
              on f.team_id = t.team_id
