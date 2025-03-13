@@ -1,0 +1,49 @@
+team_id,teamname,league_id
+1,Chelsea,1
+2,Liverpool,1
+3,Manchester United,1
+4,Arsenal,1
+5,Leicester City,1
+6,Everton,1
+7,Bayern Munich,3
+8,Borussia Dortmund,3
+9,RB Leipzig,3
+10,Schalke 04,3
+11,Real Madrid,2
+12,Barcelona,2
+13,Atletico Madrid,2
+14,Sevilla,2
+15,Juventus,4
+16,AC Milan,4
+17,Inter Milan,4
+18,Napoli,4
+19,PSG,5
+20,Lyon,5
+21,Marseille,5
+22,Monaco,5
+23,Ajax,6
+24,PSV,6
+25,Feyenoord,6
+26,Porto,7
+27,Benfica,7
+28,Sporting Lisbon,7
+29,Flamengo,8
+30,Palmeiras,8
+31,Santos,8
+32,LA Galaxy,9
+33,Seattle Sounders,9
+34,Toronto FC,9
+35,Club América,10
+36,Cruz Azul,10
+37,Chivas,10
+38,Galatasaray,11
+39,Fenerbahçe,11
+40,Besiktas,11
+41,River Plate,12
+42,Boca Juniors,12
+43,Zenit,13
+44,CSKA Moscow,13
+45,Kashima Antlers,14
+46,Yokohama F. Marinos,14
+47,Sydney FC,15
+48,Melbourne Victory,15
