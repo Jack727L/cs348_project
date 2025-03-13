@@ -61,7 +61,7 @@ const Players = () => {
   useEffect(() => {
     const loadFavorites = async () => {
       try {
-        const { players, teams } = await fetchUserFavorites();
+        const { players } = await fetchUserFavorites();
         setFavoritePlayers(new Set(players.map(player => player.player_id)));
         // setFavoriteTeams(new Set(teams.map(team => team.team_id)));
       } catch (err) {
