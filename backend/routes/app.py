@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Form, Request, Depends
+from fastapi import FastAPI, HTTPException, Form, Query, Request, Depends
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
@@ -520,6 +520,76 @@ async def get_nationality():
     cursor.execute("SELECT * FROM Country;")
     nationality = cursor.fetchall()
     return nationality
+
+
+############ Top Scorers Ranked ###############
+##### Players by team_id
+@app.get("/top-scorers-ranked")
+async def get_top_scorers_ranked(
+    league: str = Query(None, description="League name to filter by"),
+    team: str = Query(None, description="Team name to filter by"),
+    nationality: str = Query(None, description="Nationality to filter by"),
+    limit: int = Query(10, description="Number of top scorers to retrieve")
+):
+    if sum(param is not None for param in [league, team, nationality]) > 1:
+        raise HTTPException(
+            status_code=400, 
+            detail="Only one of league, team, or nationality filters can be used at a time."
+        )
+
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    base_query = """
+        SELECT 
+            player_id, playername, teamname, leaguename, nationality, total_goals,
+            RANK() OVER (ORDER BY total_goals DESC) AS score_rank
+        FROM (
+            SELECT 
+                p.player_id, p.playername, t.teamname, l.leaguename, c.countryname AS nationality,
+                SUM(s.goal) AS total_goals
+            FROM Statistics s
+            INNER JOIN Players p ON s.player_id = p.player_id
+            INNER JOIN Teams t ON p.team_id = t.team_id
+            INNER JOIN Leagues l ON t.league_id = l.league_id
+            LEFT JOIN Country c ON p.player_nationality_id = c.country_id
+            WHERE 1=1
+    """
+
+    params = []
+    # Adding filters dynamizcally based on user input
+    if league:
+        base_query += " AND LOWER(l.leaguename) LIKE %s"
+        params.append(f"%{league.lower()}%")
+    elif team:
+        base_query += " AND LOWER(t.teamname) LIKE %s"
+        params.append(f"%{team.lower()}%")
+    elif nationality:
+        base_query += " AND LOWER(c.countryname) LIKE %s"
+        params.append(f"%{nationality.lower()}%")
+    
+    # Complete the query: group by the same columns used in SELECT
+    base_query += """
+            GROUP BY p.player_id, p.playername, t.teamname, l.leaguename, nationality
+        ) AS GoalsSubquery
+        ORDER BY score_rank ASC, playername ASC
+        LIMIT %s
+    """
+
+    # Finally, add the limit
+    params.append(limit)
+
+    cursor.execute(base_query, params)
+    ranked_scorers = cursor.fetchall()
+    
+    cursor.close()
+    db.close()
+
+    if not ranked_scorers:
+        return JSONResponse(content={"message": "No top scorers found."}, status_code=200)
+
+    return ranked_scorers
+
 
 if __name__ == '__main__':
     uvicorn.run(app, port=5001)
