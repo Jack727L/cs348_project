@@ -1,0 +1,4 @@
+match_id	date	match_location	league_id	leaguename	hometeam_id	awayteam_id	home_team	away_team	hometeam_score	awayteam_score
+7	2025-01-15	Stadium Eta	1	Premier League	3	2	Manchester United	Liverpool	2	1
+3	2025-01-16	Stadium Gamma	1	Premier League	2	6	Liverpool	Everton	3	2
+5	2025-01-16	Stadium Epsilon	1	Premier League	3	4	Manchester United	Arsenal	3	2

@@ -1,5 +1,13 @@
 # cs348_project
 
+# If using python3
+
+You have to create an venv:
+python3 -m venv venv
+
+source venv/bin/activate
+
+
 ## Setup the project
 
 You have to setup the project on your local machine, and please follow the following steps in sequential order

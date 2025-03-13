@@ -2,7 +2,6 @@ DROP DATABASE IF EXISTS soccer_app;
 CREATE DATABASE soccer_app;
 USE soccer_app;
 
--- Create Country table first (with AUTO_INCREMENT)
 CREATE TABLE Country(
     country_id INT PRIMARY KEY,
     countryname VARCHAR(100) NOT NULL UNIQUE,
@@ -21,7 +20,7 @@ CREATE TABLE Leagues(
 -- Create Roles
 CREATE TABLE Roles(
     role_id INT AUTO_INCREMENT PRIMARY KEY,
-    rolename VARCHAR(255) NOT NULL,
+    rolename VARCHAR(255) NOT NULL UNIQUE,
     CHECK (rolename <> '')
 );
 
@@ -37,9 +36,8 @@ CREATE TABLE Users(
 
 -- Create Teams
 CREATE TABLE Teams(
-    team_id INT AUTO_INCREMENT PRIMARY KEY,
+    team_id INT PRIMARY KEY,
     teamname VARCHAR(100) NOT NULL,
-    -- logo VARCHAR(255) NULL,
     league_id INT NOT NULL,
     CHECK (teamname <> ''),
     FOREIGN KEY (league_id) REFERENCES Leagues(league_id) ON DELETE CASCADE

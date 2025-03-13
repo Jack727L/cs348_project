@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-// import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import TeamDetails from './TeamDetails';
-import { dummyTeamsData } from '../data/DummyTeamsData';
 import { fetchRecentGames, fetchLeagues } from '../api/recentGamesApi';
+import SearchGames from './SearchGames';
 import './RecentGames.css';
 
 const RecentGames = () => {
@@ -18,6 +18,11 @@ const RecentGames = () => {
   const [loadingLeagues, setLoadingLeagues] = useState(false);
   const [errorLeagues, setErrorLeagues] = useState(null);
 
+  // New state for search parameters
+  const [searchParameters, setSearchParameters] = useState({});
+
+  const navigate = useNavigate();
+
   useEffect(() => {
     const getLeagues = async () => {
       setLoadingLeagues(true);
@@ -25,8 +30,8 @@ const RecentGames = () => {
       try {
         const leagues = await fetchLeagues();
         const leagueCategories = leagues.map(league => ({
-          id: league.id,
-          label: league.name,
+          id: league.league_id,
+          label: league.leaguename,
         }));
         setCategories([{ id: 'all', label: 'All Games' }, ...leagueCategories]);
       } catch (err) {
@@ -45,7 +50,13 @@ const RecentGames = () => {
       setLoadingGames(true);
       setErrorGames(null);
       try {
-        const matches = await fetchRecentGames(activeCategory);
+        // Create fetch parameters to pass to the API.
+        // Assuming fetchRecentGames can handle an object with filtering parameters.
+        const fetchParams = {
+          category: activeCategory,
+          ...searchParameters,
+        };
+        const matches = await fetchRecentGames(fetchParams);
         const groups = {};
         matches.forEach(match => {
           const date = new Date(match.date).toLocaleDateString('en-US', {
@@ -69,17 +80,69 @@ const RecentGames = () => {
     };
 
     getRecentGames();
-  }, [activeCategory]);
+  }, [activeCategory, searchParameters]);
 
-  const handleTeamClick = (teamName, event) => {
+  const handleTeamClick = (teamId, event) => {
     event.stopPropagation();
-    const teamData = dummyTeamsData[teamName];
-    setSelectedTeam({ name: teamName, data: teamData });
+    if (teamId) {
+      navigate(`/team/${teamId}`);
+    } else {
+      console.error('Team ID is missing.');
+    }
   };
 
   const handleCategoryClick = (categoryId) => {
     setActiveCategory(categoryId);
     setSelectedTeam(null); 
+  };
+
+  // New handler for search criteria
+  const handleSearch = (criteria) => {
+    setSearchParameters(criteria);
+  };
+
+  const handleSearchResults = (results) => {
+    const groups = {};
+    results.forEach(match => {
+      const date = new Date(match.date).toLocaleDateString('en-US', {
+        weekday: 'short',
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      });
+      if (!groups[date]) {
+        groups[date] = [];
+      }
+      groups[date].push(match);
+    });
+    setGroupedMatches(groups);
+  };
+
+  const handleResetSearch = async () => {
+    setLoadingGames(true);
+    setErrorGames(null);
+    try {
+      const matches = await fetchRecentGames({ category: 'all' });
+      const groups = {};
+      matches.forEach(match => {
+        const date = new Date(match.date).toLocaleDateString('en-US', {
+          weekday: 'short',
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+        });
+        if (!groups[date]) {
+          groups[date] = [];
+        }
+        groups[date].push(match);
+      });
+      setGroupedMatches(groups);
+    } catch (err) {
+      setErrorGames('Failed to fetch recent games.');
+      console.error(err);
+    } finally {
+      setLoadingGames(false);
+    }
   };
 
   return (
@@ -111,50 +174,56 @@ const RecentGames = () => {
             onBack={() => setSelectedTeam(null)}
           />
         ) : (
-          <div className="matches-section">
-            {loadingGames ? (
-              <p>Loading matches...</p>
-            ) : errorGames ? (
-              <p className="error">{errorGames}</p>
-            ) : Object.keys(groupedMatches).length === 0 ? (
-              <p>No matches available.</p>
-            ) : (
-              Object.keys(groupedMatches).map(date => (
-                <div key={date} className="day-group">
-                  <h3>{date}</h3>
-                  {groupedMatches[date].map(match => (
-                    <div
-                      key={`${match.home_team}-${match.away_team}-${match.date}`}
-                      className="match-card"
-                      // onClick={() => navigate(`/game/${match.id}`)}
-                    >
-                      <div className="match-info">
-                        <span className="match-time">
-                          {new Date(match.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </span>
-                        <span className="match-cup">{match.league_name}</span>
-                        <span 
-                          className="match-team1 clickable"
-                          onClick={(e) => handleTeamClick(match.home_team, e)}
-                        >
-                          {match.home_team}
-                        </span>
-                        <span className="match-score">
-                          {match.home_team_score} - {match.away_team_score}
-                        </span>
-                        <span 
-                          className="match-team2 clickable"
-                          onClick={(e) => handleTeamClick(match.away_team, e)}
-                        >
-                          {match.away_team}
-                        </span>
+          <>
+            <SearchGames 
+              onSearchResults={handleSearchResults} 
+              onReset={handleResetSearch}
+              onSearch={handleSearch}
+            />
+            <div className="matches-section">
+              {loadingGames ? (
+                <p>Loading matches...</p>
+              ) : errorGames ? (
+                <p className="error">{errorGames}</p>
+              ) : Object.keys(groupedMatches).length === 0 ? (
+                <p>No matches available.</p>
+              ) : (
+                Object.keys(groupedMatches).map(date => (
+                  <div key={date} className="day-group">
+                    <h3>{date}</h3>
+                    {groupedMatches[date].map(match => (
+                      <div
+                        key={match.match_id}
+                        className="match-card"
+                      >
+                        <div className="match-info">
+                          <span className="match-time">
+                            {new Date(match.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                          <span className="match-cup">{match.leaguename}</span>
+                          <span 
+                            className="match-team1 clickable"
+                            onClick={(e) => handleTeamClick(match.hometeam_id, e)}
+                          >
+                            {match.home_team}
+                          </span>
+                          <span className="match-score">
+                            {match.hometeam_score} - {match.awayteam_score}
+                          </span>
+                          <span 
+                            className="match-team2 clickable"
+                            onClick={(e) => handleTeamClick(match.awayteam_id, e)}
+                          >
+                            {match.away_team}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              ))
-            )}
-          </div>
+                    ))}
+                  </div>
+                ))
+              )}
+            </div>
+          </>
         )}
       </div>
     </div>
