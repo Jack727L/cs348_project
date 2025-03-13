@@ -10,8 +10,8 @@ load_dotenv()
 connection = mysql.connector.connect(
     host=os.getenv('DB_HOST', 'localhost'),
     database='soccer_app',
-    user='your_username',
-    password='your_password'
+    user=os.getenv('DB_USER'),
+    password=os.getenv('DB_PASSWORD')
 )
 
 cursor = connection.cursor()
