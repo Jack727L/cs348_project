@@ -1,5 +1,8 @@
 import mysql.connector
 import os
+from dotenv import load_dotenv
+
+load_dotenv() # Load the .env file
 
 # Path to your SQL file
 sql_file_path = 'createTables.sql'
@@ -8,8 +11,8 @@ sql_file_path = 'createTables.sql'
 # Connect to MySQL
 connection = mysql.connector.connect(
     host=os.getenv('DB_HOST', 'localhost'),
-    user='your_username',
-    password='your_password'
+    user=os.getenv('DB_USER'),
+    password=os.getenv('DB_PASSWORD')
 )
 
 cursor = connection.cursor()
