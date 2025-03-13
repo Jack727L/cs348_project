@@ -1,22 +1,7 @@
-CREATE DATABASE IF NOT EXISTS soccer_app;
+DROP DATABASE IF EXISTS soccer_app;
+CREATE DATABASE soccer_app;
 USE soccer_app;
 
--- 1) Tables that depend on multiple parents:
-DROP TABLE IF EXISTS Statistics;       -- References Matches, Players
-DROP TABLE IF EXISTS FavoritePlayers;  -- References Users, Players
-DROP TABLE IF EXISTS FavoriteTeams;    -- References Users, Teams
--- 2) Tables that depend on others:
-DROP TABLE IF EXISTS Matches;          -- References Teams, Leagues
-DROP TABLE IF EXISTS Players;          -- References Teams, Country
-DROP TABLE IF EXISTS Teams;            -- References Leagues
-DROP TABLE IF EXISTS Users;            -- References Roles
--- 3) Tables with minimal or no dependencies:
-DROP TABLE IF EXISTS Leagues;          -- References Country
-DROP TABLE IF EXISTS Roles;            -- No parent references, but needed by Users
-DROP TABLE IF EXISTS Country;          -- No further dependencies
-
-
--- Create Country table first
 CREATE TABLE Country(
     country_id INT PRIMARY KEY,
     countryname VARCHAR(100) NOT NULL UNIQUE,
