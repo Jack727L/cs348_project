@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom'; // Add useLocation
 import FavoriteButton from './FavoriteButton';
-import { getTeamDetails } from '../api/teamStatsApi'; // Assuming you have an API utility
-import { modifyFavoriteTeam, modifyFavoritePlayer, fetchFavoriteTeams, fetchFavoritePlayers } from '../api/favoritesApi';
+import { getTeamDetails } from '../api/teamStatsApi';
+import { modifyFavoriteTeam, modifyFavoritePlayer } from '../api/favoritesApi';
+import { getUserId, fetchUserFavorites, requireAuth } from '../utils/authUtils';
 import './TeamDetails.css';
 
 const TeamDetails = () => {
@@ -15,26 +16,9 @@ const TeamDetails = () => {
   const [favoriteTeam, setFavoriteTeam] = useState(false);
   const [favoritePlayers, setFavoritePlayers] = useState(new Set());
 
-  // Get user ID from cookie
-  const getUserId = () => {
-    const userCookie = document.cookie
-      .split('; ')
-      .find(row => row.startsWith('panel_user='));
-    if (userCookie) {
-      const userData = JSON.parse(decodeURIComponent(userCookie.split('=')[1]));
-      return userData.id;
-    }
-    return null;
-  };
-
   const handleFavoriteTeam = async () => {
-    const userId = getUserId();
-    if (!userId) {
-      alert('Please sign in to add favorites');
-      return;
-    }
-
     try {
+      const userId = requireAuth();
       await modifyFavoriteTeam(userId, teamId);
       setFavoriteTeam(!favoriteTeam);
     } catch (error) {
@@ -43,13 +27,8 @@ const TeamDetails = () => {
   };
 
   const handleFavoritePlayer = async (playerId) => {
-    const userId = getUserId();
-    if (!userId) {
-      alert('Please sign in to add favorites');
-      return;
-    }
-
     try {
+      const userId = requireAuth();
       await modifyFavoritePlayer(userId, playerId);
       setFavoritePlayers(prev => {
         const newSet = new Set(prev);
@@ -68,20 +47,17 @@ const TeamDetails = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const userId = getUserId();
-        const [teamData, favoriteTeams, favoritePlayers] = await Promise.all([
-          getTeamDetails(teamId),
-          userId ? fetchFavoriteTeams(userId) : [],
-          userId ? fetchFavoritePlayers(userId) : []
-        ]);
-
+        const teamData = await getTeamDetails(teamId);
         setTeam(teamData);
         
+        // Fetch favorites if user is logged in
+        const { teams, players } = await fetchUserFavorites();
+        
         // Check if current team is in favorites
-        setFavoriteTeam(favoriteTeams.some(team => team.team_id === parseInt(teamId)));
+        setFavoriteTeam(teams.some(team => team.team_id === parseInt(teamId)));
         
         // Create Set of favorite player IDs
-        const favoritePlayerIds = new Set(favoritePlayers.map(player => player.player_id));
+        const favoritePlayerIds = new Set(players.map(player => player.player_id));
         setFavoritePlayers(favoritePlayerIds);
         
         setError(null);
@@ -116,6 +92,8 @@ const TeamDetails = () => {
     );
   }
 
+  const isUserLoggedIn = getUserId() !== null;
+
   return (
     <div className="team-details">
       <button className="back-button" onClick={handleBack}>← Back to Games</button>
@@ -129,7 +107,7 @@ const TeamDetails = () => {
           <div className="team-info">
             <div className="team-name-container">
               <h2 className="team-name">{team.teamname}</h2>
-              {getUserId() && (
+              {isUserLoggedIn && (
                 <FavoriteButton 
                   isFavorite={favoriteTeam}
                   onClick={handleFavoriteTeam}
@@ -166,7 +144,7 @@ const TeamDetails = () => {
             <div key={player.player_id} className="player-card">
               <div className="player-header">
                 <div className="player-number">#{player.player_id}</div>
-                {getUserId() && (
+                {isUserLoggedIn && (
                   <FavoriteButton 
                     isFavorite={favoritePlayers.has(player.player_id)}
                     onClick={() => handleFavoritePlayer(player.player_id)}

@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { getPlayers, searchPlayers } from '../api/playersApi';
+import { modifyFavoritePlayer } from '../api/favoritesApi';
 import ReactCountryFlag from 'react-country-flag';
 import nationalityToCode from '../utils/nationalityToCode';
+import { getUserId, fetchUserFavorites, requireAuth } from '../utils/authUtils';
+import FavoriteButton from './FavoriteButton';
 import './Players.css';
 import NationalityDropdown from './NationalityDropdown';
 
 const Players = () => {
   const [players, setPlayers] = useState([]);
+  const [favoritePlayers, setFavoritePlayers] = useState(new Set());
+  // const [favoriteTeams, setFavoriteTeams] = useState(new Set());
   const [page, setPage] = useState(1);
   const [pageInput, setPageInput] = useState(1);
   const pageSize = 10;
@@ -53,6 +58,19 @@ const Players = () => {
     fetchPlayers();
   }, [page, searchQuery, searchTrigger, pageSize]);
 
+  useEffect(() => {
+    const loadFavorites = async () => {
+      try {
+        const { players, teams } = await fetchUserFavorites();
+        setFavoritePlayers(new Set(players.map(player => player.player_id)));
+        // setFavoriteTeams(new Set(teams.map(team => team.team_id)));
+      } catch (err) {
+        console.error('Error fetching favorites:', err);
+      }
+    };
+    loadFavorites();
+  }, []);
+
   const hasNextPage = players.length === pageSize;
 
   const handlePageInputBlur = () => {
@@ -92,6 +110,44 @@ const Players = () => {
     setSearchQuery({});
     setSearchTrigger(prev => prev + 1);
   };
+
+  const handleFavoritePlayer = async (playerId) => {
+    try {
+      const userId = requireAuth();
+      await modifyFavoritePlayer(userId, playerId);
+      setFavoritePlayers(prev => {
+        const newSet = new Set(prev);
+        if (newSet.has(playerId)) {
+          newSet.delete(playerId);
+        } else {
+          newSet.add(playerId);
+        }
+        return newSet;
+      });
+    } catch (error) {
+      console.error('Error modifying favorite player:', error);
+    }
+  };
+
+  // const handleFavoriteTeam = async (teamId) => {
+  //   try {
+  //     const userId = requireAuth();
+  //     await modifyFavoriteTeam(userId, teamId);
+  //     setFavoriteTeams(prev => {
+  //       const newSet = new Set(prev);
+  //       if (newSet.has(teamId)) {
+  //         newSet.delete(teamId);
+  //       } else {
+  //         newSet.add(teamId);
+  //       }
+  //       return newSet;
+  //     });
+  //   } catch (error) {
+  //     console.error('Error modifying favorite team:', error);
+  //   }
+  // };
+
+  const isUserLoggedIn = getUserId() !== null;
 
   return (
     <div className="players">
@@ -151,9 +207,26 @@ const Players = () => {
             <tbody>
               {players.map((player) => (
                 <tr key={player.player_id}>
-                  {/* <td>{player.player_id}</td> */}
-                  <td>{player.playername}</td>
-                  <td>{player.teamname}</td>
+                  <td>
+                    {player.playername}
+                    {isUserLoggedIn && (
+                      <FavoriteButton 
+                        isFavorite={favoritePlayers.has(player.player_id)}
+                        onClick={() => handleFavoritePlayer(player.player_id)}
+                        disabled={false}
+                      />
+                    )}
+                  </td>
+                  <td>
+                    {player.teamname}
+                    {/* {isUserLoggedIn && (
+                      <FavoriteButton 
+                        isFavorite={favoriteTeams.has(player.team_id)}
+                        onClick={() => handleFavoriteTeam(player.team_id)}
+                        disabled={false}
+                      />
+                    )} */}
+                  </td>
                   <td>{player.position}</td>
                   <td>
                     <ReactCountryFlag 

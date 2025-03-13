@@ -26,6 +26,7 @@
     padding: 12px 15px;
     border: 1px solid #ddd;
     text-align: left;
+    position: relative;
   }
   
   .players-table th {
@@ -122,4 +123,27 @@
   
   .search-form button:hover {
     background-color: #0056b3;
+  }
+  
+  .players-table .favorite-button {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 4px;
+    min-width: 32px;
+    opacity: 0;
+    transition: opacity 0.1s ease;
+  }
+  
+  .players-table .favorite-button.active {
+    opacity: 1;
+  }
+  
+  .players-table tr:hover .favorite-button {
+    opacity: 1;
+  }
+  
+  .players-table .favorite-button i {
+    font-size: 1.1em;
   }
