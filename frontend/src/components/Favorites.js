@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fetchFavoriteTeams, fetchFavoritePlayers, modifyFavoriteTeam, modifyFavoritePlayer } from '../api/favoritesApi';
+import { modifyFavoriteTeam, modifyFavoritePlayer } from '../api/favoritesApi';
+import { getUserId, fetchUserFavorites, requireAuth } from '../utils/authUtils';
 import './Favorites.css';
 import ConfirmModal from './ConfirmModal';
 
@@ -19,44 +20,26 @@ const Favorites = () => {
         isTeam: true
     });
 
-    const getUserId = () => {
-        const userCookie = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('panel_user='));
-        if (userCookie) {
-        const userData = JSON.parse(decodeURIComponent(userCookie.split('=')[1]));
-        return userData.id;
-        }
-        return null;
-    };
-
     useEffect(() => {
-        const userId = getUserId();
-        if (!userId) {
-        setError('Please sign in to view favorites');
-        setLoading(false);
-        return;
-        }
-
-        const fetchFavorites = async () => {
-        try {
-            setLoading(true);
-            const [teams, players] = await Promise.all([
-            fetchFavoriteTeams(userId),
-            fetchFavoritePlayers(userId)
-            ]);
-            setFavoriteTeams(teams);
-            setFavoritePlayers(players);
-            setError(null);
-        } catch (err) {
-            setError('Failed to fetch favorites');
-            console.error(err);
-        } finally {
-            setLoading(false);
-        }
+        const loadFavorites = async () => {
+            try {
+                requireAuth();
+                setLoading(true);
+                const { teams, players } = await fetchUserFavorites();
+                setFavoriteTeams(teams);
+                setFavoritePlayers(players);
+                setError(null);
+            } catch (err) {
+                setError(err.message === 'Authentication required' 
+                    ? 'Please sign in to view favorites' 
+                    : 'Failed to fetch favorites');
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
         };
 
-        fetchFavorites();
+        loadFavorites();
     }, []);
 
     const handleTeamClick = (teamId) => {
