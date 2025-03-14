@@ -10,13 +10,7 @@ CREATE USER 'admin'@'localhost' IDENTIFIED BY 'securepassword';
 GRANT ALL PRIVILEGES ON *.* TO 'admin'@'localhost';
 ```
 
-Step 2: Creating databases & tables using createTables.sql
-
-```
-source database/createTables.sql
-```
-
-Step 3: Once you done with the above steps, you can create a .env file in the database folder and add the following variables:
+Step 2: Once you done with the above steps, you can create a .env file in the database folder and add the following variables:
 
 ```
 DB_HOST=localhost
@@ -25,24 +19,39 @@ DB_USER='your_username'
 DB_PASSWORD='your_password'
 ```
 
-Step 4: Populate sample data to tables
+Connect to sample_data, follow step 3 to step 4.
+
+Connect to production_data, follow step 5.
+
+Step 3: Creating databases & tables using createTables.sql
 
 ```
-We have created an auto-populate script for you to populate the database, run following command to populate the database:
+source database/createTables.sql
+```
+OR
+```
 mysql -u root -p < database/createTables.sql
+```
+
+Step 4: Populate sample data to tables
+
+We have created an auto-populate script for you to populate the database, run following command to populate the database:
+
+```
 python database/sample_data/populateTables.py
 ```
 
 You should see messages saying that "Data imported successfully."
 
-Step 5: Double-check that sample data has been loaded
+To re-populate the tables if you made edits, re-run the above command.
 
+Step 5: Create tables and populate production data to tables:
 ```
-SELECT * FROM APP_USERS;
+cd database
+./init_production.sh
 ```
 
-OR: to re-populate the tables if you made edits, run the following commands:
-
+Step 6: Double-check that sample data has been loaded
 ```
-python database/new_data_sets/newPopulateTables.py
+mysql -u root -p < SELECT * FROM APP_USERS LIMIT 5;
 ```
