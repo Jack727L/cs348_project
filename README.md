@@ -36,7 +36,8 @@ then run this to grant all privileges to the admin account:
 GRANT ALL PRIVILEGES ON *.* TO 'admin'@'localhost';
 ```
 
-Step 4: Once you done with the above steps, you can create a .env file in the backend folder and add the following variables:
+Step 4: Once you done with the above steps, you can create a .env file and add the following variables:\
+(Recommended) place the .env file in the root directory as database/init_production and backend/routes/app.py require these credentials
 
 ```
 DB_HOST=localhost
