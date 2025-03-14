@@ -2,6 +2,7 @@ import mysql.connector
 import pandas as pd
 import os
 from dotenv import load_dotenv
+from decimal import Decimal
 
 load_dotenv()
 
@@ -157,7 +158,7 @@ for index, row in data.iterrows():
         INSERT INTO Statistics (match_id, player_id, goal, pass_acc, assist, playtime)
         VALUES (%s, %s, %s, %s, %s, %s)
         """,
-        (row['match_id'], row['player_id'], row['goal'], row['pass_acc'], row['assist'], row['playtime'])
+        (row['match_id'], row['player_id'], row['goal'], Decimal(row['pass_acc']), row['assist'], row['playtime'])
     )
 connection.commit()
 print("Statistics Data imported successfully!")
