@@ -1,34 +1,43 @@
 .data {
   display: flex;
+  max-width: 1200px;
+  margin: 40px auto;
+  font-family: 'Arial', sans-serif;
 }
 
 .sidebar {
-  width: 200px;
-  border-right: 1px solid #ddd;
-  margin-right: 20px;
+  width: 220px;
+  background-color: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 .sidebar-item {
-  display: flex;
-  align-items: center;
   padding: 15px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
   position: relative;
-  transition: background-color 0.3s;
 }
 
 .sidebar-item:hover {
-  background-color: #f2f2f2;
+  background-color: #e8e8e8;
 }
 
 .sidebar-item.active {
-  background-color: #f0f0f0;
+  background-color: #d0dafd;
   font-weight: bold;
 }
 
+.sidebar-item.active .indicator {
+  display: block;
+}
+
 .indicator {
+  display: block;
   position: absolute;
   left: 0;
+  top: 0;
   width: 5px;
   height: 100%;
   background-color: rgb(89, 0, 244);
@@ -36,12 +45,24 @@
 
 .data-section {
   flex: 1;
+  background-color: #ffffff;
   padding: 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  margin-left: 20px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  font-size: 14px;
+}
+
+.data-section h2 {
+  margin-top: 0;
+  font-size: 18px;
 }
 
 .data-table {
   width: 100%;
   border-collapse: collapse;
+  margin-top: 20px;
 }
 
 .data-header,
@@ -49,6 +70,7 @@
   display: flex;
   align-items: center;
   padding: 10px 0;
+  font-size: inherit;
 }
 
 .data-header {
@@ -57,27 +79,23 @@
 }
 
 .team-row {
-  display: flex;
-  align-items: center;
-  padding: 3px 0;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.3s ease;
 }
 
+.team-row:hover {
+  background-color: #f9f9f9;
+}
+
+/* Equal width for every column cell */
+.data-header span,
 .team-row span {
   flex: 1;
-}
-
-.team-standing {
-  flex: 0 0 30px;
-}
-
-.team-name {
-  flex: 2;
-}
-
-.team-wins,
-.team-losses,
-.team-points {
-  flex: 1;
   text-align: center;
+  padding: 0 5px;
+}
+
+/* Maintain consistent font sizing */
+.data-table span {
+  font-size: 14px;
 }
