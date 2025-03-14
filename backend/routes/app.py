@@ -84,7 +84,7 @@ async def logout():
 
 ##### Recent Games by league_id endpoints
 @app.get("/recentgames")
-async def recent_games(league: str = None):
+async def recent_games(league: str = None, page: int = 1, page_size: int = 10):
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
 
@@ -97,13 +97,14 @@ async def recent_games(league: str = None):
                 LEFT JOIN Leagues ON Matches.league_id = Leagues.league_id
                 LEFT JOIN Teams as home on Matches.hometeam_id = home.team_id 
                 LEFT JOIN Teams as away on Matches.awayteam_id = away.team_id """)
+    offset = (page - 1) * page_size
     if league and league != 'all':
         query += "WHERE Leagues.league_id = %s "
-        query += "ORDER BY Matches.date DESC LIMIT 30"
-        cursor.execute(query, (league,))
+        query += "ORDER BY Matches.date DESC LIMIT %s OFFSET %s"
+        cursor.execute(query, (league, page_size, offset))
     else:
-        query += "ORDER BY Matches.date DESC LIMIT 30"
-        cursor.execute(query)
+        query += "ORDER BY Matches.date DESC LIMIT %s OFFSET %s"
+        cursor.execute(query, (page_size, offset))
 
     games = cursor.fetchall()
     cursor.close()
@@ -171,7 +172,7 @@ async def search_player(
 # Search game between start_date and end_date by league
 # start_date and end_date in form "yyyy-mm-dd"
 @app.get("/game")
-async def search_game(start_date: str = None, end_date: str = None, league: int = None):
+async def search_game(start_date: str = None, end_date: str = None, league: int = None, page: int = 1, page_size: int = 10):
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
 
@@ -201,6 +202,10 @@ async def search_game(start_date: str = None, end_date: str = None, league: int 
         params.append(league)
 
     query += " ORDER BY date"
+    offset = (page - 1) * page_size
+    query += " LIMIT %s OFFSET %s"
+    params.append(page_size)
+    params.append(offset)
 
     cursor.execute(query, params)
     results = cursor.fetchall()

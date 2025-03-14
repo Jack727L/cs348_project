@@ -1,8 +1,8 @@
 import api from './api';
 
-export const fetchRecentGames = async (league = 'all') => {
+export const fetchRecentGames = async (league = 'all', page = 1, page_size = 10) => {
   try {
-    const response = await api.get('/recentgames', { params: { league } });
+    const response = await api.get('/recentgames', { params: { league, page, page_size } });
     return response.data;
   } catch (error) {
     console.error('Error fetching recent games:', error);
@@ -20,13 +20,15 @@ export const fetchLeagues = async () => {
   }
 };
 
-export const searchGames = async ({ start_date, end_date, league }) => {
+export const searchGames = async ({ start_date, end_date, league, page = 1, page_size = 10 }) => {
   try {
     const response = await api.get('/game', { 
       params: { 
         start_date, 
         end_date, 
-        league 
+        league, 
+        page, 
+        page_size
       } 
     });
     return response.data;

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { fetchLeagues, searchGames } from '../api/recentGamesApi';
 import './SearchGames.css';
 
-const SearchGames = ({ onSearchResults, onReset }) => {
+const SearchGames = ({ onSearchResults, onReset, onSearch }) => {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [selectedLeague, setSelectedLeague] = useState('all');
@@ -20,19 +20,14 @@ const SearchGames = ({ onSearchResults, onReset }) => {
         loadLeagues();
     }, []);
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
-        try {
-            const results = await searchGames({
-                start_date: startDate || undefined,
-                end_date: endDate || undefined,
-                league: selectedLeague === 'all' ? undefined : selectedLeague,
-            });
-            onSearchResults(results || []);
-        } catch (error) {
-            console.error('Search failed:', error);
-            onSearchResults([]);
-        }
+        const criteria = {
+            start_date: startDate || undefined,
+            end_date: endDate || undefined,
+            league: selectedLeague === 'all' ? undefined : selectedLeague,
+        };
+        onSearch(criteria);
     };
 
     const handleReset = () => {

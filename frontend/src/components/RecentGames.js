@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TeamDetails from './TeamDetails';
-import { fetchRecentGames, fetchLeagues } from '../api/recentGamesApi';
+import { fetchRecentGames, fetchLeagues, searchGames } from '../api/recentGamesApi';
 import SearchGames from './SearchGames';
 import './RecentGames.css';
 
@@ -20,6 +20,12 @@ const RecentGames = () => {
 
   // New state for search parameters
   const [searchParameters, setSearchParameters] = useState({});
+
+  // Pagination state
+  const [page, setPage] = useState(1);
+  const [pageInput, setPageInput] = useState(1);
+  const pageSize = 10;
+  const [matchesCount, setMatchesCount] = useState(0);
 
   const navigate = useNavigate();
 
@@ -50,13 +56,18 @@ const RecentGames = () => {
       setLoadingGames(true);
       setErrorGames(null);
       try {
-        // Create fetch parameters to pass to the API.
-        // Assuming fetchRecentGames can handle an object with filtering parameters.
-        const fetchParams = {
-          category: activeCategory,
-          ...searchParameters,
-        };
-        const matches = await fetchRecentGames(fetchParams);
+        let matches = [];
+        if (Object.keys(searchParameters).length > 0) {
+          const params = {
+            ...searchParameters,
+            page,
+            page_size: pageSize,
+          };
+          matches = await searchGames(params);
+        } else {
+          matches = await fetchRecentGames(activeCategory, page, pageSize);
+        }
+        setMatchesCount(matches.length);
         const groups = {};
         matches.forEach(match => {
           const date = new Date(match.date + "T00:00:00").toLocaleDateString('en-US', {
@@ -80,7 +91,7 @@ const RecentGames = () => {
     };
 
     getRecentGames();
-  }, [activeCategory, searchParameters]);
+  }, [activeCategory, searchParameters, page]);
 
   const handleTeamClick = (teamId, event) => {
     event.stopPropagation();
@@ -93,12 +104,16 @@ const RecentGames = () => {
 
   const handleCategoryClick = (categoryId) => {
     setActiveCategory(categoryId);
-    setSelectedTeam(null); 
+    setSelectedTeam(null);
+    setPage(1);
+    setPageInput(1);
   };
 
   // New handler for search criteria
   const handleSearch = (criteria) => {
     setSearchParameters(criteria);
+    setPage(1);
+    setPageInput(1);
   };
 
   const handleSearchResults = (results) => {
@@ -122,7 +137,9 @@ const RecentGames = () => {
     setLoadingGames(true);
     setErrorGames(null);
     try {
-      const matches = await fetchRecentGames({ category: 'all' });
+      const matches = await fetchRecentGames('all', 1, pageSize);
+      setPage(1);
+      setPageInput(1);
       const groups = {};
       matches.forEach(match => {
         const date = new Date(match.date + "T00:00:00").toLocaleDateString('en-US', {
@@ -137,11 +154,27 @@ const RecentGames = () => {
         groups[date].push(match);
       });
       setGroupedMatches(groups);
+      setSearchParameters({});
     } catch (err) {
       setErrorGames('Failed to fetch recent games.');
       console.error(err);
     } finally {
       setLoadingGames(false);
+    }
+  };
+
+  const handlePageInputBlur = () => {
+    const newPage = Number(pageInput);
+    if (newPage > 0 && newPage !== page) {
+      setPage(newPage);
+    } else {
+      setPageInput(page);
+    }
+  };
+
+  const handlePageInputKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handlePageInputBlur();
     }
   };
 
@@ -222,6 +255,38 @@ const RecentGames = () => {
                   </div>
                 ))
               )}
+            </div>
+            <div className="pagination">
+              <button 
+                onClick={() => {
+                  setPage(prev => Math.max(prev - 1, 1));
+                  setPageInput(prev => Math.max(prev - 1, 1));
+                }}
+                disabled={page === 1}
+              >
+                Previous
+              </button>
+              <div className="page-input-container">
+                <span>Page</span>
+                <input
+                  type="number"
+                  className="page-input"
+                  value={pageInput}
+                  min="1"
+                  onChange={(e) => setPageInput(Number(e.target.value))}
+                  onBlur={handlePageInputBlur}
+                  onKeyDown={handlePageInputKeyDown}
+                />
+              </div>
+              <button 
+                onClick={() => {
+                  setPage(prev => prev + 1);
+                  setPageInput(page + 1);
+                }}
+                disabled={matchesCount < pageSize}
+              >
+                Next
+              </button>
             </div>
           </>
         )}
