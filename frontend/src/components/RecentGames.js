@@ -59,7 +59,7 @@ const RecentGames = () => {
         const matches = await fetchRecentGames(fetchParams);
         const groups = {};
         matches.forEach(match => {
-          const date = new Date(match.date).toLocaleDateString('en-US', {
+          const date = new Date(match.date + "T00:00:00").toLocaleDateString('en-US', {
             weekday: 'short',
             year: 'numeric',
             month: 'short',
@@ -104,7 +104,7 @@ const RecentGames = () => {
   const handleSearchResults = (results) => {
     const groups = {};
     results.forEach(match => {
-      const date = new Date(match.date).toLocaleDateString('en-US', {
+      const date = new Date(match.date + "T00:00:00").toLocaleDateString('en-US', {
         weekday: 'short',
         year: 'numeric',
         month: 'short',
@@ -125,7 +125,7 @@ const RecentGames = () => {
       const matches = await fetchRecentGames({ category: 'all' });
       const groups = {};
       matches.forEach(match => {
-        const date = new Date(match.date).toLocaleDateString('en-US', {
+        const date = new Date(match.date + "T00:00:00").toLocaleDateString('en-US', {
           weekday: 'short',
           year: 'numeric',
           month: 'short',
