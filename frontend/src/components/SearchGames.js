@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { fetchLeagues, searchGames } from '../api/recentGamesApi';
 import './SearchGames.css';
 
-const SearchGames = ({ onSearchResults, onReset, onSearch }) => {
+const SearchGames = ({ onSearchResults, onReset, onSearch, selectedLeague, onLeagueChange }) => {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
-    const [selectedLeague, setSelectedLeague] = useState('all');
+    const [localLeague, setLocalLeague] = useState(selectedLeague || 'all');
     const [leagues, setLeagues] = useState([]);
 
     useEffect(() => {
@@ -20,12 +20,16 @@ const SearchGames = ({ onSearchResults, onReset, onSearch }) => {
         loadLeagues();
     }, []);
 
+    useEffect(() => {
+        setLocalLeague(selectedLeague);
+    }, [selectedLeague]);
+
     const handleSubmit = (e) => {
         e.preventDefault();
         const criteria = {
             start_date: startDate || undefined,
             end_date: endDate || undefined,
-            league: selectedLeague === 'all' ? undefined : selectedLeague,
+            league: localLeague === 'all' ? undefined : localLeague,
         };
         onSearch(criteria);
     };
@@ -33,7 +37,7 @@ const SearchGames = ({ onSearchResults, onReset, onSearch }) => {
     const handleReset = () => {
         setStartDate('');
         setEndDate('');
-        setSelectedLeague('all');
+        setLocalLeague('all');
         onReset();
     };
 
@@ -62,8 +66,13 @@ const SearchGames = ({ onSearchResults, onReset, onSearch }) => {
                     <label htmlFor="league">League:</label>
                     <select
                         id="league"
-                        value={selectedLeague}
-                        onChange={e => setSelectedLeague(e.target.value)}
+                        value={localLeague}
+                        onChange={(e) => {
+                            setLocalLeague(e.target.value);
+                            if (onLeagueChange) {
+                                onLeagueChange(e.target.value);
+                            }
+                        }}
                     >
                         <option value="all">All Games</option>
                         {leagues.map(league => (

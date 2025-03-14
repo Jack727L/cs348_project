@@ -104,6 +104,7 @@ const RecentGames = () => {
 
   const handleCategoryClick = (categoryId) => {
     setActiveCategory(categoryId);
+    setSearchParameters({});
     setSelectedTeam(null);
     setPage(1);
     setPageInput(1);
@@ -178,6 +179,15 @@ const RecentGames = () => {
     }
   };
 
+  // New handler for league change from the search form
+  const handleLeagueChange = (league) => {
+    setActiveCategory(league);
+    setPage(1);
+    setPageInput(1);
+    // Optionally, if you want the search parameters cleared:
+    // setSearchParameters({});
+  };
+
   return (
     <div className="recent-games">
       <div className="sidebar">
@@ -212,6 +222,8 @@ const RecentGames = () => {
               onSearchResults={handleSearchResults} 
               onReset={handleResetSearch}
               onSearch={handleSearch}
+              selectedLeague={activeCategory}
+              onLeagueChange={handleLeagueChange}
             />
             <div className="matches-section">
               {loadingGames ? (
