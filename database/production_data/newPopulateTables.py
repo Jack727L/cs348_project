@@ -158,7 +158,12 @@ for index, row in data.iterrows():
         INSERT INTO Statistics (match_id, player_id, goal, pass_acc, assist, playtime)
         VALUES (%s, %s, %s, %s, %s, %s)
         """,
-        (row['match_id'], row['player_id'], row['goal'], Decimal(row['pass_acc']), row['assist'], row['playtime'])
+        (Decimal(row['match_id']), 
+         Decimal(row['player_id']), 
+         Decimal(row['goal']), 
+         Decimal(row['pass_acc']), 
+         Decimal(row['assist']), 
+         Decimal(row['playtime']))
     )
 connection.commit()
 print("Statistics Data imported successfully!")

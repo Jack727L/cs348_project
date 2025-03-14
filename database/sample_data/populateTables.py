@@ -16,7 +16,7 @@ connection = mysql.connector.connect(
 cursor = connection.cursor()
 
 ### Load Roles data
-csv_file = 'database/new_data_sets/sample_role.csv'
+csv_file = 'database/sample_data/sample_role.csv'
 roles_data = pd.read_csv(csv_file)
 
 for index, row in roles_data.iterrows():
@@ -30,7 +30,7 @@ connection.commit()
 print("Roles Data imported successfully!")
 
 ### Load Users data
-csv_file = 'database/new_data_sets/sample_app_user.csv'
+csv_file = 'database/sample_data/sample_app_user.csv'
 users_data = pd.read_csv(csv_file)
 
 for index, row in users_data.iterrows():
@@ -50,7 +50,7 @@ connection.commit()
 print("Users Data imported successfully!")
 
 ### Load country data
-csv_file = 'database/new_data_sets/sample_country.csv' 
+csv_file = 'database/sample_data/sample_country.csv' 
 country_data = pd.read_csv(csv_file)
 
 for index, row in country_data.iterrows():
@@ -63,7 +63,7 @@ connection.commit()
 print("Country Data imported successfully!")
 
 ### Load league data
-csv_file = 'database/new_data_sets/sample_league.csv' 
+csv_file = 'database/sample_data/sample_league.csv' 
 data = pd.read_csv(csv_file)
 
 for index, row in data.iterrows():
@@ -81,7 +81,7 @@ connection.commit()
 print("League Data imported successfully!")
 
 ### Load team data
-csv_file = 'database/new_data_sets/sample_team.csv' 
+csv_file = 'database/sample_data/sample_team.csv' 
 data = pd.read_csv(csv_file)
 
 for index, row in data.iterrows():
@@ -99,7 +99,7 @@ connection.commit()
 print("Team Data imported successfully!")
 
 #### Load game data
-csv_file = 'database/new_data_sets/sample_game.csv' 
+csv_file = 'database/sample_data/sample_game.csv' 
 data = pd.read_csv(csv_file)
 
 for index, row in data.iterrows():
@@ -124,7 +124,7 @@ connection.commit()
 print("Game Data imported successfully!")
 
 ### Load player data
-csv_file = 'database/new_data_sets/sample_player.csv' 
+csv_file = 'database/sample_data/sample_player.csv' 
 data = pd.read_csv(csv_file)
 
 for index, row in data.iterrows():
@@ -147,7 +147,7 @@ connection.commit()
 print("Player Data imported successfully!")
 
 ### Load statistics data
-csv_file = 'database/new_data_sets/sample_statistics.csv'
+csv_file = 'database/sample_data/sample_statistics.csv'
 data = pd.read_csv(csv_file)
 data['pass_acc'] = data['pass_acc'].apply(lambda x: f"{x:.2f}")
 
