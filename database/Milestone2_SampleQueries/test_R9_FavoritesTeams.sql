@@ -11,7 +11,7 @@ JOIN Teams AS T ON FT.team_id = T.team_id
 WHERE FT.user_id = 1
 ORDER BY FT.dateAdded DESC;
 
--- Removing a Player from FavoritePlayers
+-- Removing a Teams from FavoriteTeams
 DELETE FROM FavoriteTeams
 WHERE user_id = 1 AND team_id = 2;
 

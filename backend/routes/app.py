@@ -126,7 +126,7 @@ async def search_player(
         params.append(nationality)
     
     offset = (page - 1) * page_size
-    query += " LIMIT %s OFFSET %s"
+    query += "ORDER BY playername LIMIT %s OFFSET %s"
     params.append(page_size)
     params.append(offset)
 
@@ -304,9 +304,11 @@ async def recent_games(league: str = None):
                 LEFT JOIN Teams as home on Matches.hometeam_id = home.team_id 
                 LEFT JOIN Teams as away on Matches.awayteam_id = away.team_id """)
     if league and league != 'all':
-        query += "WHERE Leagues.league_id = %s"
+        query += "WHERE Leagues.league_id = %s "
+        query += "ORDER BY Matches.date DESC LIMIT 30"
         cursor.execute(query, (league,))
     else:
+        query += "ORDER BY Matches.date DESC LIMIT 30"
         cursor.execute(query)
 
     games = cursor.fetchall()
@@ -347,7 +349,6 @@ async def get_team_player(team: str = None):
     return players
 
 ##### Number of match win/lose/draw by team
-##TBD check queries Team_Stats.sql
 @app.get("/teams/stats")
 async def get_teams_stat(team: str = None):
     db = get_db_connection()
@@ -484,6 +485,8 @@ async def get_team_details(team: str = None):
         "players": players
     }
 
+
+##### Players info
 @app.get("/players")
 async def get_all_players(page: int = 1, page_size: int = 10):
     db = get_db_connection()
@@ -513,6 +516,7 @@ async def get_all_players(page: int = 1, page_size: int = 10):
 
     return players
 
+##### Country info
 @app.get("/nationality")
 async def get_nationality():
     db = get_db_connection()
