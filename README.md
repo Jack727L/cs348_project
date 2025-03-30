@@ -47,22 +47,21 @@ DB_PASSWORD=your_password
 ```
 
 Step 5: Auto-populate the database
+We have created an auto-populate script for you to populate the database, run following command to populate the database:
 
 ```
-We have created an auto-populate script for you to populate the database, run following command to populate the database:
 cd database
 ./init_production.sh
 ```
 
-Step 6: Run the backend
-
+Step 6: Run the backend \
+This will start the backend server with fastapi, you can access the api documentation locally with your local host.
 ```
 python backend/routes/app.py
-this will start the backend server with fastapi, you can access the api documentation locally with your local host.
 ```
 
-Step 7: Run the frontend
-navigate to the frontend folder and run the following command:
+Step 7: Run the frontend \
+Navigate to the frontend folder and run the following command:
 
 ```
 npm start
