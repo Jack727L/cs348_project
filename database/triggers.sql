@@ -1,6 +1,4 @@
-------------------------------------------------------------------------------------
 -- Trigger: Automatically notifies users when a new match is inserted
-------------------------------------------------------------------------------------
 CREATE TRIGGER notify_match_insert
 AFTER INSERT ON Matches -- This trigger runs after a new row is inserted into the Matches table
 FOR EACH ROW -- The trigger runs once per inserted row
@@ -21,9 +19,7 @@ BEGIN
 END;
 
 
----------------------------------------------------------------------------------------------
 -- Event: Scheduled daily job to notify users when a favorite player reaches a goal milestone
----------------------------------------------------------------------------------------------
 CREATE EVENT daily_player_milestone_event
 ON SCHEDULE EVERY 1 DAY -- This event runs once every day
 STARTS CURRENT_TIMESTAMP -- The event starts running immediately from the current date/time
