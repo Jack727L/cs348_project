@@ -654,6 +654,24 @@ async def get_top_scorers_ranked(
 
     return ranked_scorers
 
+############ Notifications ###############
+@app.get("/notifications/{user_id}")
+async def get_notifications(user_id: int):
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+    cursor.execute("""
+        SELECT notification_id, message, created_at
+        FROM Notifications
+        WHERE user_id = %s
+        ORDER BY created_at DESC
+        LIMIT 20
+    """, (user_id,))
+    notifications = cursor.fetchall()
+    cursor.close()
+    db.close()
+
+    return notifications
+
 
 if __name__ == '__main__':
     uvicorn.run(app, port=5001)
