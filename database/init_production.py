@@ -2,13 +2,13 @@ import mysql.connector
 import os
 from dotenv import load_dotenv
 
-load_dotenv() # Load the .env file
+load_dotenv()
 
-# Path to your SQL file
-sql_file_path = 'createTables.sql'
+# General schema file
+schema_path = 'createTables.sql'
+# Trigger file
+trigger_path = 'triggers.sql'
 
-
-# Connect to MySQL
 connection = mysql.connector.connect(
     host=os.getenv('DB_HOST', 'localhost'),
     user=os.getenv('DB_USER'),
@@ -17,22 +17,29 @@ connection = mysql.connector.connect(
 
 cursor = connection.cursor()
 
-# Read the SQL file
-with open(sql_file_path, 'r') as file:
-    sql_script = file.read()
+# Step 1: Run basic schema commands (split safely)
+with open(schema_path, 'r') as file:
+    schema_sql = file.read()
 
-# Split statements by ';'
-sql_commands = sql_script.strip().split(';')
+for statement in schema_sql.strip().split(';'):
+    stmt = statement.strip()
+    if stmt:
+        try:
+            cursor.execute(stmt)
+        except mysql.connector.Error as err:
+            print("Schema Error:", err)
+
+# Step 2: Run trigger/event block in full
+with open(trigger_path, 'r') as file:
+    trigger_sql = file.read()
 
 try:
-    for statement in sql_commands:
-        stmt = statement.strip()
-        if stmt:
-            cursor.execute(stmt)
+    for result in cursor.execute(trigger_sql, multi=True):
+        pass  # consume result
     connection.commit()
-    print("Database and tables created successfully!")
+    print("Trigger/event created successfully!")
 except mysql.connector.Error as err:
-    print("Error: ", err)
-finally:
-    cursor.close()
-    connection.close()
+    print("Trigger/Event Error:", err)
+
+cursor.close()
+connection.close()
