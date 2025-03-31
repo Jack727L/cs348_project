@@ -8,6 +8,8 @@ load_dotenv()
 schema_path = 'createTables.sql'
 # Trigger file
 trigger_path = 'triggers.sql'
+# Procedure file
+procedure_path = 'procedure.sql'
 
 connection = mysql.connector.connect(
     host=os.getenv('DB_HOST', 'localhost'),
@@ -40,6 +42,20 @@ try:
     print("Trigger/event created successfully!")
 except mysql.connector.Error as err:
     print("Trigger/Event Error:", err)
+
+
+# Step 3: Run the Procedure block in full
+with open(procedure_path, 'r') as file:
+    procedure_sql = file.read()
+
+try:
+    for result in cursor.execute(procedure_sql, multi=True):
+        pass  # consume result
+    connection.commit()
+    print("Procedure created successfully!")
+except mysql.connector.Error as err:
+    print("Procedure Error:", err)
+
 
 cursor.close()
 connection.close()

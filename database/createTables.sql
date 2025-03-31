@@ -121,3 +121,17 @@ CREATE TABLE Notifications (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE
 );
+
+
+-- Create AuditLogs
+CREATE TABLE AuditLogs(
+    log_id INT AUTO_INCREMENT PRIMARY KEY,
+    action_type ENUM('INSERT', 'UPDATE', 'DELETE'),
+    table_name VARCHAR(100),
+    action_details TEXT,
+    action_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    performed_by VARCHAR(100)
+);
+
+-- Index
+CREATE INDEX idx_players_team_id ON Players(team_id);
