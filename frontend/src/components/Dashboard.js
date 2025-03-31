@@ -6,11 +6,14 @@ import Players from './Players';
 import SignIn from './SignIn';
 import Favorites from './Favorites';
 import TopScorers from './TopScorers';
+import Notifications from './Notifications';
+import { getUser } from '../utils/authUtils';
 import './Dashboard.css';
 
 const Dashboard = () => {
   const location = useLocation();
   const [activeTab, setActiveTab] = useState('recentGames');
+  const [isSignedIn, setIsSignedIn] = useState(false);
 
   // Update active tab based on navigation state
   useEffect(() => {
@@ -19,6 +22,10 @@ const Dashboard = () => {
       // Clear the state after using it
       window.history.replaceState({}, document.title);
     }
+    
+    // Check if user is signed in using authUtils
+    const user = getUser();
+    setIsSignedIn(!!user);
   }, [location.state]);
 
   return (
@@ -60,7 +67,10 @@ const Dashboard = () => {
               My Favorites
             </button>
           </div>
-          <SignIn setActiveTab={setActiveTab} />
+          <div className="user-controls">
+            {isSignedIn && <Notifications />}
+            <SignIn setActiveTab={setActiveTab} />
+          </div>
         </div>
       </div>
 
