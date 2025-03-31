@@ -749,6 +749,75 @@ async def player_form_tracker(player_id: int):
         "games": all_games_data
     }
 
+@app.get("/league/standings")
+async def get_league_standings(league: int):
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+    query = """
+    WITH match_status AS (
+        SELECT 
+            match_id,
+            hometeam_id,
+            awayteam_id,
+            CASE 
+                WHEN hometeam_score = awayteam_score THEN 'draw'
+                WHEN hometeam_score > awayteam_score THEN 'home_win'
+                ELSE 'away_win' 
+            END AS result
+        FROM Matches
+        WHERE league_id = %s
+    ),
+    home_results AS (
+        SELECT hometeam_id AS team_id,
+               COUNT(CASE WHEN hometeam_score > awayteam_score THEN 1 END) AS win,
+               COUNT(CASE WHEN hometeam_score < awayteam_score THEN 1 END) AS lose,
+               COUNT(CASE WHEN hometeam_score = awayteam_score THEN 1 END) AS draw
+        FROM Matches
+        WHERE league_id = %s
+        GROUP BY hometeam_id
+    ),
+    away_results AS (
+        SELECT awayteam_id AS team_id,
+               COUNT(CASE WHEN awayteam_score > hometeam_score THEN 1 END) AS win,
+               COUNT(CASE WHEN awayteam_score < hometeam_score THEN 1 END) AS lose,
+               COUNT(CASE WHEN awayteam_score = hometeam_score THEN 1 END) AS draw
+        FROM Matches
+        WHERE league_id = %s
+        GROUP BY awayteam_id
+    ),
+    team_results AS (
+        SELECT team_id,
+               SUM(win) AS win,
+               SUM(lose) AS lose,
+               SUM(draw) AS draw
+        FROM (
+            SELECT * FROM home_results
+            UNION ALL
+            SELECT * FROM away_results
+        ) AS combined
+        GROUP BY team_id
+    )
+    SELECT 
+        t.team_id,
+        t.teamname,
+        l.leaguename,
+        IFNULL(tr.win, 0) AS win,
+        IFNULL(tr.lose, 0) AS lose,
+        IFNULL(tr.draw, 0) AS draw,
+        (IFNULL(tr.win, 0) * 3 + IFNULL(tr.draw, 0)) AS points,
+        RANK() OVER (ORDER BY (IFNULL(tr.win, 0) * 3 + IFNULL(tr.draw, 0)) DESC) AS ranking
+    FROM Teams t
+    JOIN Leagues l ON t.league_id = l.league_id
+    LEFT JOIN team_results tr ON t.team_id = tr.team_id
+    WHERE t.league_id = %s
+    ORDER BY points DESC, win DESC, draw DESC;
+    """
+    # We need to supply 'league' four times for the placeholders above.
+    cursor.execute(query, (league, league, league, league))
+    standings = cursor.fetchall()
+    cursor.close()
+    db.close()
+    return standings
 
 if __name__ == '__main__':
     uvicorn.run(app, port=5001)

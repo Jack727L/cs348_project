@@ -1,72 +1,109 @@
-// src/components/Data.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { getLeagueStandings, fetchLeagues } from '../api/dataApi';
 import './Data.css';
 
-const teamsData = {
-  premierLeague: [
-    { id: 1, standing: 1, name: 'Manchester United', games: 30, wins: 25, losses: 5, points: 80 },
-    { id: 2, standing: 2, name: 'Liverpool', games: 30, wins: 23, losses: 7, points: 75 },
-    { id: 3, standing: 3, name: 'Chelsea', games: 30, wins: 20, losses: 10, points: 70 },
-  ],
-  bundesliga: [
-    { id: 4, standing: 1, name: 'Bayern Munich', games: 30, wins: 28, losses: 2, points: 90 },
-    { id: 5, standing: 2, name: 'Borussia Dortmund', games: 30, wins: 24, losses: 6, points: 80 },
-  ],
-  laLiga: [
-    { id: 6, standing: 1, name: 'Real Madrid', games: 30, wins: 27, losses: 3, points: 85 },
-    { id: 7, standing: 2, name: 'Barcelona', games: 30, wins: 26, losses: 4, points: 82 },
-  ],
-};
+const LeagueStandings = () => {
+  const [leagues, setLeagues] = useState([]);
+  const [selectedLeague, setSelectedLeague] = useState('');
+  const [standings, setStandings] = useState([]);
+  const [loadingLeagues, setLoadingLeagues] = useState(true);
+  const [loadingStandings, setLoadingStandings] = useState(false);
+  const [error, setError] = useState('');
 
-const categories = [
-  { id: 'premierLeague', label: 'Premier League' },
-  { id: 'bundesliga', label: 'Bundesliga' },
-  { id: 'laLiga', label: 'La Liga' },
-];
+  // Dynamically fetch available leagues and select the first one by default.
+  useEffect(() => {
+    const loadLeagues = async () => {
+      try {
+        const leaguesData = await fetchLeagues();
+        setLeagues(leaguesData);
+        if (leaguesData && leaguesData.length > 0) {
+          setSelectedLeague(leaguesData[0].league_id || leaguesData[0].id);
+        }
+      } catch (err) {
+        setError('Failed to fetch leagues.');
+      } finally {
+        setLoadingLeagues(false);
+      }
+    };
+    loadLeagues();
+  }, []);
 
-const Data = () => {
-  const [activeCategory, setActiveCategory] = useState('premierLeague');
-  const teams = teamsData[activeCategory] || [];
-  teams.sort((a, b) => a.standing - b.standing);
+  // Fetch standings when the selected league changes.
+  useEffect(() => {
+    const loadStandings = async () => {
+      if (!selectedLeague) return;
+      setLoadingStandings(true);
+      try {
+        const data = await getLeagueStandings(selectedLeague);
+        setStandings(data);
+      } catch (err) {
+        setError('Failed to fetch league standings.');
+      } finally {
+        setLoadingStandings(false);
+      }
+    };
+    loadStandings();
+  }, [selectedLeague]);
+
+  // Handle sidebar item click.
+  const handleSidebarItemClick = (leagueId) => {
+    setSelectedLeague(leagueId);
+  };
+
+  if (loadingLeagues) {
+    return <div className="data-section">Loading leagues...</div>;
+  }
+
+  if (error) {
+    return <div className="data-section">{error}</div>;
+  }
+
   return (
     <div className="data">
       <div className="sidebar">
-        {categories.map(category => (
-          <div
-            key={category.id}
-            className={`sidebar-item ${activeCategory === category.id ? 'active' : ''}`}
-            onClick={() => setActiveCategory(category.id)}
+        {leagues.map((league) => (
+          <div 
+            key={league.league_id || league.id}
+            className={`sidebar-item ${selectedLeague === (league.league_id || league.id) ? 'active' : ''}`}
+            onClick={() => handleSidebarItemClick(league.league_id || league.id)}
           >
-            {activeCategory === category.id && <div className="indicator"></div>}
-            <span>{category.label}</span>
+            {selectedLeague === (league.league_id || league.id) && <div className="indicator"></div>}
+            <span>{league.leaguename || league.name}</span>
           </div>
         ))}
       </div>
       <div className="data-section">
-        <h2>Rankings</h2>
-        <div className="data-table">
-          <div className="data-header">
-            <span className="team-standing">#</span>
-            <span className="team-name">Team</span>
-            <span className="team-games">Games</span>
-            <span className="team-wins">Wins</span>
-            <span className="team-losses">Losses</span>
-            <span className="team-points">Points</span>
-          </div>
-          {teams.map(team => (
-            <div key={team.id} className="team-row">
-              <span className="team-standing">{team.standing}</span>
-              <span className="team-name">{team.name}</span>
-              <span className="team-games">{team.games}</span>
-              <span className="team-wins">{team.wins}</span>
-              <span className="team-losses">{team.losses}</span>
-              <span className="team-points">{team.points}</span>
+        <h2>League Standings</h2>
+        {loadingStandings ? (
+          <div>Loading standings...</div>
+        ) : (
+          <div className="data-table">
+            <div className="data-header">
+              <span className="team-ranking">Rank</span>
+              <span className="team-name">Team</span>
+              <span className="team-games">Games</span>
+              <span className="team-wins">Wins</span>
+              <span className="team-losses">Losses</span>
+              <span className="team-points">Points</span>
             </div>
-          ))}
-        </div>
+            {standings.map((team) => {
+              const totalGames = (team.win || 0) + (team.lose || 0) + (team.draw || 0);
+              return (
+                <div key={team.team_id} className="team-row">
+                  <span className="team-ranking">{team.ranking}</span>
+                  <span className="team-name">{team.teamname}</span>
+                  <span className="team-games">{totalGames}</span>
+                  <span className="team-wins">{team.win}</span>
+                  <span className="team-losses">{team.lose}</span>
+                  <span className="team-points">{team.points}</span>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
-export default Data;
+export default LeagueStandings;
