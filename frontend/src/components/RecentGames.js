@@ -41,7 +41,7 @@ const RecentGames = () => {
         }));
         setCategories([{ id: 'all', label: 'All Games' }, ...leagueCategories]);
       } catch (err) {
-        setErrorLeagues('Failed to fetch leagues.');
+        setErrorLeagues('No games found.');
         console.error(err);
       } finally {
         setLoadingLeagues(false);
