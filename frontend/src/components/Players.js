@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { getPlayers, searchPlayers } from '../api/playersApi';
 import { modifyFavoritePlayer } from '../api/favoritesApi';
 import ReactCountryFlag from 'react-country-flag';
@@ -202,6 +203,7 @@ const Players = () => {
                 <th>Position</th>
                 <th>Nationality</th>
                 <th>Age</th>
+                <th>Details</th>
               </tr>
             </thead>
             <tbody>
@@ -242,6 +244,9 @@ const Players = () => {
                     {player.nationality}
                   </td>
                   <td>{player.age}</td>
+                  <td>
+                    <Link to={`/player/${player.player_id}/form-tracker`}>View Details</Link>
+                  </td>
                 </tr>
               ))}
             </tbody>

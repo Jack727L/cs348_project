@@ -157,6 +157,11 @@ for index, row in data.iterrows():
         """
         INSERT INTO Statistics (match_id, player_id, goal, pass_acc, assist, playtime)
         VALUES (%s, %s, %s, %s, %s, %s)
+        ON DUPLICATE KEY UPDATE
+            goal = VALUES(goal),
+            pass_acc = VALUES(pass_acc),
+            assist = VALUES(assist),
+            playtime = VALUES(playtime)
         """,
         (Decimal(row['match_id']), 
          Decimal(row['player_id']), 

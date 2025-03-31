@@ -44,3 +44,16 @@ export const getNationalities = async () => {
     throw error;
   }
 };
+
+export const getPlayerFormTracker = async (playerId) => {
+  try {
+    const response = await api.get('/players/form_tracker', {
+      params: { player_id: playerId },
+      headers: { 'Accept': 'application/json' }
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching player's form tracker data:", error);
+    throw error;
+  }
+};
