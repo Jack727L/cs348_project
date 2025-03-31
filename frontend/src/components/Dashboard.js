@@ -5,6 +5,7 @@ import Data from './Data';
 import Players from './Players';
 import SignIn from './SignIn';
 import Favorites from './Favorites';
+import TopScorers from './TopScorers';
 import './Dashboard.css';
 
 const Dashboard = () => {
@@ -41,6 +42,12 @@ const Dashboard = () => {
               Players
             </button>
             <button
+              className={`top-tab ${activeTab === 'topScorers' ? 'active' : ''}`}
+              onClick={() => setActiveTab('topScorers')}
+            >
+              Top Scorers
+            </button>
+            <button
               className={`top-tab ${activeTab === 'data' ? 'active' : ''}`}
               onClick={() => setActiveTab('data')}
             >
@@ -62,6 +69,7 @@ const Dashboard = () => {
         {activeTab === 'data' && <Data />}
         {activeTab === 'players' && <Players />}
         {activeTab === 'favorites' && <Favorites />}
+        {activeTab === 'topScorers' && <TopScorers />}
       </div>
     </div>
   );
