@@ -42,3 +42,11 @@ JOIN (
 LEFT JOIN Notifications n ON n.user_id = fp.user_id 
     AND n.message LIKE CONCAT('%', p.playername, ' reached ', player_totals.total_goals, '%')
 WHERE n.notification_id IS NULL; -- Only insert if this exact message hasn't already been sent
+
+
+-- Create a scheduled event named 'cleanup_old_notifications' (Run every 1 month)
+CREATE EVENT cleanup_old_notifications
+ON SCHEDULE EVERY 1 MONTH
+DO
+DELETE FROM Notifications -- Delete notifications older than 1 month
+WHERE created_at < NOW() - INTERVAL 1 MONTH; 
