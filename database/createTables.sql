@@ -54,7 +54,8 @@ CREATE TABLE Players(
     CHECK (playername <> ''),
     CHECK (age IS NULL OR (age > 0)),
     FOREIGN KEY (team_id) REFERENCES Teams(team_id) ON DELETE CASCADE,
-    FOREIGN KEY (player_nationality_id) REFERENCES Country(country_id) ON DELETE SET NULL
+    FOREIGN KEY (player_nationality_id) REFERENCES Country(country_id) ON DELETE SET NULL,
+    FULLTEXT INDEX playername_fulltext (playername)
 );
 
 -- Create Matches

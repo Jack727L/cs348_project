@@ -128,17 +128,20 @@ async def search_player(
 
     query = """SELECT player_id, playername, teamname, position, countryname as nationality, age
                FROM Players 
-               LEFT JOIN Teams 
-               ON Players.team_id = Teams.team_id
-               LEFT JOIN Country
-               ON Players.player_nationality_id = Country.country_id
+               LEFT JOIN Teams ON Players.team_id = Teams.team_id
+               LEFT JOIN Country ON Players.player_nationality_id = Country.country_id
                WHERE 1 = 1
             """
     params = []
     
     if name:
-        query += " AND LOWER(playername) LIKE %s"
-        params.append(f"%{name.lower()}%")
+        # If search term is short, fallback to LIKE search
+        if len(name) < 4:
+            query += " AND LOWER(playername) LIKE %s"
+            params.append(f"%{name.lower()}%")
+        else:
+            query += " AND MATCH(playername) AGAINST(%s IN NATURAL LANGUAGE MODE)"
+            params.append(name)
     
     if team:
         query += " AND Players.team_id = %s"

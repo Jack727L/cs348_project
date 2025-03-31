@@ -34,7 +34,12 @@ const PlayerFormTracker = () => {
         const data = await getPlayerFormTracker(playerId);
         setDataObj(data);
       } catch (err) {
-        setError('Error loading performance data.');
+        // If the API returns a 404, show a friendly message instead of an error
+        if (err?.response?.status === 404) {
+          setError('No performance data available for this player.');
+        } else {
+          setError('Error loading performance data.');
+        }
       } finally {
         setLoading(false);
       }
@@ -55,6 +60,14 @@ const PlayerFormTracker = () => {
         <p className="error">{error}</p>
       </div>
     );
+
+  if (dataObj.form_tracker.length === 0 && dataObj.games.length === 0) {
+    return (
+      <div className="player-form-tracker">
+        <p>No performance data available for this player.</p>
+      </div>
+    );
+  }
 
   const sortedGames = [...dataObj.games].sort(
     (a, b) => new Date(a.date) - new Date(b.date)
