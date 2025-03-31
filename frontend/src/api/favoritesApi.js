@@ -48,4 +48,14 @@ export const modifyFavoritePlayer = async (userId, playerId) => {
         console.error('Error modifying favorite player:', error);
         throw error.response ? error.response.data : { message: 'An unexpected error occurred' };
     }
-}; 
+};
+
+export const fetchNotifications = async (userId) => {
+    try {
+        const response = await api.get(`/notifications/${userId}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching notifications:', error);
+        throw error.response ? error.response.data : { message: 'An unexpected error occurred' };
+    }
+};
