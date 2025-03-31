@@ -153,7 +153,7 @@ async def search_player(
         params.append(nationality)
     
     offset = (page - 1) * page_size
-    query += "ORDER BY playername LIMIT %s OFFSET %s"
+    query += " ORDER BY playername LIMIT %s OFFSET %s"
     params.append(page_size)
     params.append(offset)
 
