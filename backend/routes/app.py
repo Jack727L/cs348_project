@@ -672,6 +672,80 @@ async def get_notifications(user_id: int):
 
     return notifications
 
+## advanced feature R11, player form tracker
+# Player form tracker endpoint
+@app.get("/players/form_tracker")
+async def player_form_tracker(player_id: int):
+    """
+    Endpoint to track a player's recent performance.
+    Returns two JSON lists:
+      - form_tracker: Contains the rolling average of goals over the last 5 matches along with goals,
+                      pass accuracy, assists, and playtime.
+      - games: List of all games that this player played in along with goals, pass accuracy, assists, and playtime.
+    """
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+    
+    # Query 1: Get rolling average performance data with additional stats
+    form_tracker_query = """
+    SELECT 
+        s.player_id, 
+        p.playername, 
+        m.date, 
+        s.goal,
+        s.pass_acc,
+        s.assist,
+        s.playtime,
+        AVG(s.goal) OVER (
+            PARTITION BY s.player_id 
+            ORDER BY m.date 
+            ROWS BETWEEN 4 PRECEDING AND CURRENT ROW
+        ) AS rolling_goal_avg
+    FROM Statistics s
+    JOIN Matches m ON s.match_id = m.match_id
+    JOIN Players p ON s.player_id = p.player_id
+    WHERE s.player_id = %s
+    ORDER BY m.date ASC;
+    """
+    cursor.execute(form_tracker_query, (player_id,))
+    form_tracker_data = cursor.fetchall()
+    
+    # Query 2: Get details for all games the player participated in including performance stats
+    all_games_query = """
+    SELECT 
+        m.match_id,
+        m.date,
+        m.match_location,
+        m.league_id,
+        home.teamname AS home_team,
+        away.teamname AS away_team,
+        m.hometeam_score,
+        m.awayteam_score,
+        s.goal,
+        s.pass_acc,
+        s.assist,
+        s.playtime
+    FROM Matches m
+    JOIN Statistics s ON m.match_id = s.match_id
+    LEFT JOIN Teams home ON m.hometeam_id = home.team_id
+    LEFT JOIN Teams away ON m.awayteam_id = away.team_id
+    WHERE s.player_id = %s
+    ORDER BY m.date ASC;
+    """
+    cursor.execute(all_games_query, (player_id,))
+    all_games_data = cursor.fetchall()
+    
+    cursor.close()
+    db.close()
+    
+    if not form_tracker_data:
+        raise HTTPException(status_code=404, detail="No data found for player performance.")
+    
+    return {
+        "form_tracker": form_tracker_data,
+        "games": all_games_data
+    }
+
 
 if __name__ == '__main__':
     uvicorn.run(app, port=5001)

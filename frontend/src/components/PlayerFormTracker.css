@@ -1,0 +1,75 @@
+.player-form-tracker {
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  max-width: 1000px;
+  margin: 20px auto;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.player-form-tracker .header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.player-form-tracker .back-arrow {
+  position: absolute;
+  left: 20px;
+  text-decoration: none;
+  font-size: 24px;
+  color: #007bff;
+}
+
+.player-form-tracker .back-arrow:hover {
+  color: #0056b3;
+}
+
+.player-form-tracker h2 {
+  text-align: center;
+  font-size: 1.5rem;
+  margin: 0 0 20px 0;
+}
+
+.player-form-tracker h3 {
+  margin-top: 20px;
+  margin-bottom: 10px;
+  font-size: 1.25rem;
+  text-align: center;
+  color: #333;
+}
+
+.player-form-tracker table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.player-form-tracker th,
+.player-form-tracker td {
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  text-align: left;
+  position: relative;
+}
+
+.player-form-tracker th {
+  background-color: #007bff;
+  color: #fff;
+  font-weight: bold;
+}
+
+.player-form-tracker .error {
+  color: red;
+  text-align: center;
+}
+
+.chart-container {
+  margin: 20px 0;
+} 
