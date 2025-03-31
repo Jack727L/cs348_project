@@ -20,7 +20,7 @@ const LeagueStandings = () => {
           setSelectedLeague(leaguesData[0].league_id || leaguesData[0].id);
         }
       } catch (err) {
-        setError('Failed to fetch leagues.');
+        setError('No leagues found.');
       } finally {
         setLoadingLeagues(false);
       }
@@ -37,7 +37,7 @@ const LeagueStandings = () => {
         const data = await getLeagueStandings(selectedLeague);
         setStandings(data);
       } catch (err) {
-        setError('Failed to fetch league standings.');
+        setError('No league standings found.');
       } finally {
         setLoadingStandings(false);
       }

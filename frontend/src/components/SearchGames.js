@@ -14,7 +14,7 @@ const SearchGames = ({ onSearchResults, onReset, onSearch, selectedLeague, onLea
                 const leaguesData = await fetchLeagues();
                 setLeagues(leaguesData);
             } catch (error) {
-                console.error('Failed to fetch leagues:', error);
+                console.error('No leagues found:', error);
             }
         };
         loadLeagues();
