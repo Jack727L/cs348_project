@@ -62,7 +62,9 @@ python backend/routes/app.py
 
 Step 7: Run the frontend \
 Navigate to the frontend folder and run the following command:
-
+```
+npm install
+```
 ```
 npm start
 ```
