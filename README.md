@@ -3,10 +3,12 @@
 # If using python3
 
 You have to create an venv:
+```
 python3 -m venv venv
-
+```
+```
 source venv/bin/activate
-
+```
 
 ## Setup the project
 
